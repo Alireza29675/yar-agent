@@ -41,6 +41,7 @@
   "files": [
     "./bin",
     "./dist",
+    "./src/prompts",
     "./oclif.manifest.json"
   ],
   "homepage": "https://github.com/dev/yar",
@@ -62,7 +63,7 @@
   },
   "repository": "dev/yar",
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "build": "shx rm -rf dist && tsc -b && shx cp -r src/prompts dist/prompts",
     "lint": "eslint",
     "postpack": "shx rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
