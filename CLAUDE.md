@@ -218,6 +218,24 @@ async function buildMyPrompt(target: string, issueType: string) {
 7. **Tool Restrictions**: Use `createReadOnlyAgentConfig()` for read-only operations
 8. **API Key**: Requires `ANTHROPIC_API_KEY` environment variable
 
+## Creating New Commands
+
+See [docs/CREATING_COMMANDS.md](./docs/CREATING_COMMANDS.md) for a comprehensive guide on creating new commands and tasks. The guide covers:
+
+- Complete example with a `review` command
+- Step-by-step instructions
+- Architecture patterns and best practices
+- Prompt file creation with variable substitution
+- Task implementation patterns
+- Command structure and conventions
+- Testing and validation
+
+Quick reference:
+1. Create prompt file: `src/tasks/prompts/my-task.md`
+2. Create task: `src/tasks/my-task.ts`
+3. Create command: `src/commands/my-command.ts`
+4. Build and test: `pnpm run build && ./bin/dev.js my-command`
+
 ## Testing
 
 No traditional tests exist. The project uses evaluations (evals) to assess AI agent behavior in the future.

@@ -28,6 +28,7 @@ pnpm run build
 For detailed documentation, see the [docs/](./docs/) directory:
 
 - **[CLAUDE.md](./CLAUDE.md)** - Guide for AI coding assistants (Claude Code, Cursor, etc.)
+- **[Creating Commands](./docs/CREATING_COMMANDS.md)** - Step-by-step guide to creating new commands and tasks
 - **[Study Command Features](./docs/STUDY_COMMAND_FEATURES.md)** - Complete guide to the study command
 - **[UI Library Reference](./docs/UI_LIBRARY.md)** - API documentation and examples
 - **[Implementation Summary](./docs/IMPLEMENTATION_SUMMARY.md)** - Technical details and architecture
