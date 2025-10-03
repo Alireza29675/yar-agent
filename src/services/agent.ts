@@ -12,6 +12,18 @@ import type {AvailableTool} from '../config/tools.js'
 import {theme} from '../lib/theme/index.js'
 
 /**
+ * Context item for providing additional information to the agent
+ */
+export interface ContextItem {
+  /** Content of the context */
+  content: string
+  /** Description explaining what this context is */
+  description: string
+  /** Title for this context */
+  title: string
+}
+
+/**
  * Agent configuration options
  */
 export interface AgentConfig {
@@ -27,6 +39,8 @@ export interface AgentConfig {
 export interface AgentExecutionOptions {
   /** Agent configuration */
   config: AgentConfig
+  /** Optional array of context items to provide additional information */
+  context?: ContextItem[]
   /** Optional callback for processing text blocks */
   onText?: (text: string) => void
   /** Optional callback for processing tool uses */
@@ -54,6 +68,34 @@ export interface AgentExecutionResult {
 }
 
 /**
+ * Format context items into a structured string for the prompt
+ *
+ * @param contextItems - Array of context items
+ * @returns Formatted context string
+ */
+function formatContext(contextItems: ContextItem[]): string {
+  if (contextItems.length === 0) return ''
+
+  const sections = contextItems.map(item => {
+    return `## ${item.title}
+
+${item.description}
+
+\`\`\`
+${item.content}
+\`\`\``
+  })
+
+  return `# Additional Context
+
+${sections.join('\n\n')}
+
+---
+
+`
+}
+
+/**
  * Execute an agent and handle its messages
  *
  * @param options - Agent execution options
@@ -67,6 +109,11 @@ export interface AgentExecutionResult {
  *     systemPrompt: 'You are a code analyzer',
  *     allowedTools: ['Read', 'Grep']
  *   },
+ *   context: [{
+ *     title: 'Project Structure',
+ *     description: 'Overview of the project layout',
+ *     content: 'src/\n  commands/\n  tasks/\n  ...'
+ *   }],
  *   showUI: true,
  *   onText: (text) => console.log('Got text:', text)
  * })
@@ -75,19 +122,26 @@ export interface AgentExecutionResult {
 export async function executeAgent(
   options: AgentExecutionOptions,
 ): Promise<AgentExecutionResult> {
-  const {config, onText, onToolUse, prompt, showUI = true} = options
+  const {config, context, onText, onToolUse, prompt, showUI = true} = options
   const startTime = Date.now()
 
   let messageCount = 0
   const toolUseCounts: Record<string, number> = {}
   let textOutput = ''
 
+  // Build the final prompt with context if provided
+  let finalPrompt = prompt
+  if (context && context.length > 0) {
+    const contextSection = formatContext(context)
+    finalPrompt = `${contextSection}${prompt}`
+  }
+
   const result = await query({
     options: {
       allowedTools: config.allowedTools,
       systemPrompt: config.systemPrompt,
     },
-    prompt,
+    prompt: finalPrompt,
   })
 
   for await (const message of result) {

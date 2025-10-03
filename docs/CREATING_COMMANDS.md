@@ -139,11 +139,17 @@ export async function reviewTask(options: ReviewOptions): Promise<ReviewResult> 
     systemPrompt: CODE_ANALYSIS_SYSTEM_PROMPT,
   }
 
-  // Execute the agent
+  // Execute the agent (with optional context)
   const result = await executeAgent({
     config,
     prompt,
     showUI,
+    // Optional: provide additional context
+    // context: [{
+    //   title: 'Example Context',
+    //   description: 'Description of what this context provides',
+    //   content: 'The actual content...'
+    // }]
   })
 
   return {
