@@ -1,5 +1,8 @@
-import {query} from '@anthropic-ai/claude-agent-sdk'
-import {Args, Command} from '@oclif/core'
+import {Args, Command, Flags} from '@oclif/core'
+import * as fs from 'node:fs/promises'
+
+import {theme} from '../lib/theme/index.js'
+import {studyTask} from '../tasks/study.js'
 
 export default class Study extends Command {
   static args = {
@@ -8,47 +11,111 @@ export default class Study extends Command {
       required: true,
     }),
   }
-static description = 'Study a directory and understand how it works recursively'
-static examples = [
+  static description = 'Study a directory and understand how it works recursively'
+  static examples = [
     '<%= config.bin %> <%= command.id %> .',
     '<%= config.bin %> <%= command.id %> ./src',
     '<%= config.bin %> <%= command.id %> /path/to/project',
+    '<%= config.bin %> <%= command.id %> . -o analysis.md',
+    '<%= config.bin %> <%= command.id %> . -m "Focus on security vulnerabilities"',
+    'cat notes.txt | <%= config.bin %> <%= command.id %> ./src',
+    'git diff | <%= config.bin %> <%= command.id %> . -o analysis.md',
+    '<%= config.bin %> <%= command.id %> ./api -m "Explain the authentication flow" -o report.md',
   ]
+  static flags = {
+    message: Flags.string({
+      char: 'm',
+      description: 'Important message for the agent to pay attention to',
+      required: false,
+    }),
+    output: Flags.string({
+      char: 'o',
+      description: 'Output file path to write the analysis to',
+      required: false,
+    }),
+  }
 
   public async run(): Promise<void> {
-    const {args} = await this.parse(Study)
+    const {args, flags} = await this.parse(Study)
     const {directory} = args
+    const {message, output} = flags
 
-    this.log(`Starting to study directory: ${directory}\n`)
+    // Check for piped input
+    const stdinInput = await this.readStdin()
 
-    const result = await query({
-      options: {
-        allowedTools: ['Read', 'Grep', 'Glob', 'ListDir'],
-        systemPrompt: `You are a code analysis assistant. Your goal is to develop a deep, comprehensive understanding of codebases.
+    // Suppress visual UI if writing to file
+    const showUI = !output
 
-You can ONLY use read and search operations. If you need to perform any other action (like writing files, executing commands, etc.), you MUST ask the user for permission.
+    if (showUI) {
+      // Display header
+      theme().header('🔍 YAR Study Agent')
+      theme().info(`Analyzing directory: ${directory}`)
 
-Deliver clear, insightful analysis that reveals how the codebase works, what it does, and how its components fit together.`,
-      },
-      prompt: `Study the directory at path: ${directory}
-
-Develop a thorough understanding of this directory and its contents. Explore recursively and look at parent directories if needed for context.
-
-Provide a comprehensive analysis that explains what this codebase is, how it works, and any important insights about its structure, dependencies, architecture, and functionality.`,
-    })
-
-    for await (const message of result) {
-      if (message.type === 'assistant') {
-        const {content} = message.message
-        for (const block of content) {
-          if (block.type === 'text') {
-            this.log(block.text)
-          }
-        }
+      if (stdinInput) {
+        theme().info(`Piped input received: ${stdinInput.length} characters`)
       }
+
+      if (message) {
+        theme().warning(`User message: ${message}`)
+      }
+
+      theme().divider()
     }
 
-    this.log('\n✅ Study complete!')
+    // Run the study task
+    const result = await studyTask({
+      context: stdinInput || undefined,
+      directory,
+      message: message || undefined,
+      showUI,
+    })
+
+    // Write to file if output flag is provided
+    if (output) {
+      await fs.writeFile(output, result.analysis, 'utf8')
+      theme().success(`Analysis written to: ${output}`)
+      theme().info(`Duration: ${result.duration}s | Messages: ${result.messageCount} | Tools Used: ${result.toolUseCount}`)
+    } else {
+      // Display completion summary
+      theme().divider()
+      
+      theme().summaryBox('Study Complete', {
+        'Directory': directory,
+        'Duration': `${result.duration}s`,
+        'Messages': result.messageCount,
+        'Tools Used': result.toolUseCount,
+      })
+
+      theme().displayToolStats()
+      
+      theme().success('Study completed successfully!')
+    }
+  }
+
+  private async readStdin(): Promise<null | string> {
+    // Check if stdin is being piped
+    if (process.stdin.isTTY) {
+      return null
+    }
+
+    return new Promise((resolve) => {
+      let data = ''
+      process.stdin.setEncoding('utf8')
+      
+      process.stdin.on('data', (chunk) => {
+        data += chunk
+      })
+      
+      process.stdin.on('end', () => {
+        resolve(data.trim() || null)
+      })
+
+      // Timeout if no data comes
+      setTimeout(() => {
+        if (!data) {
+          resolve(null)
+        }
+      }, 100)
+    })
   }
 }
-

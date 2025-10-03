@@ -1,397 +1,208 @@
-test-agent
-=================
+# YAR - Your AI Research Assistant
 
-A new CLI generated with oclif
+A modern CLI tool powered by Claude Agent SDK for code analysis and understanding.
 
+## Features
 
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/test-agent.svg)](https://npmjs.org/package/test-agent)
-[![Downloads/week](https://img.shields.io/npm/dw/test-agent.svg)](https://npmjs.org/package/test-agent)
+- 🔍 **Study Command**: Recursively analyze and understand codebases
+- 🎨 **Rich UI**: Beautiful terminal output with colors, spinners, tables, and boxes
+- 🤖 **AI-Powered**: Uses Claude Agent SDK for intelligent code analysis
+- 📊 **Tool Tracking**: Visual feedback showing what the AI is doing in real-time
+- 🎯 **Modern Stack**: Built with TypeScript, ESM, and latest CLI best practices
 
+## Installation
 
-<!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
-# Usage
-<!-- usage -->
-```sh-session
-$ npm install -g test-agent
-$ test-agent COMMAND
-running command...
-$ test-agent (--version)
-test-agent/0.0.0 darwin-arm64 node-v22.12.0
-$ test-agent --help [COMMAND]
-USAGE
-  $ test-agent COMMAND
-...
-```
-<!-- usagestop -->
-# Commands
-<!-- commands -->
-* [`test-agent hello PERSON`](#test-agent-hello-person)
-* [`test-agent hello world`](#test-agent-hello-world)
-* [`test-agent help [COMMAND]`](#test-agent-help-command)
-* [`test-agent plugins`](#test-agent-plugins)
-* [`test-agent plugins add PLUGIN`](#test-agent-plugins-add-plugin)
-* [`test-agent plugins:inspect PLUGIN...`](#test-agent-pluginsinspect-plugin)
-* [`test-agent plugins install PLUGIN`](#test-agent-plugins-install-plugin)
-* [`test-agent plugins link PATH`](#test-agent-plugins-link-path)
-* [`test-agent plugins remove [PLUGIN]`](#test-agent-plugins-remove-plugin)
-* [`test-agent plugins reset`](#test-agent-plugins-reset)
-* [`test-agent plugins uninstall [PLUGIN]`](#test-agent-plugins-uninstall-plugin)
-* [`test-agent plugins unlink [PLUGIN]`](#test-agent-plugins-unlink-plugin)
-* [`test-agent plugins update`](#test-agent-plugins-update)
+```bash
+# Install dependencies
+pnpm install
 
-## `test-agent hello PERSON`
+# Build the project
+pnpm run build
 
-Say hello
-
-```
-USAGE
-  $ test-agent hello PERSON -f <value>
-
-ARGUMENTS
-  PERSON  Person to say hello to
-
-FLAGS
-  -f, --from=<value>  (required) Who is saying hello
-
-DESCRIPTION
-  Say hello
-
-EXAMPLES
-  $ test-agent hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
+# Run locally
+./bin/dev.js [command]
 ```
 
-_See code: [src/commands/hello/index.ts](https://github.com/dev/test-agent/blob/v0.0.0/src/commands/hello/index.ts)_
+## 📚 Documentation
 
-## `test-agent hello world`
+For detailed documentation, see the [docs/](./docs/) directory:
 
-Say hello world
+- **[CLAUDE.md](./CLAUDE.md)** - Guide for AI coding assistants (Claude Code, Cursor, etc.)
+- **[Study Command Features](./docs/STUDY_COMMAND_FEATURES.md)** - Complete guide to the study command
+- **[UI Library Reference](./docs/UI_LIBRARY.md)** - API documentation and examples
+- **[Implementation Summary](./docs/IMPLEMENTATION_SUMMARY.md)** - Technical details and architecture
+- **[Changelog](./docs/CHANGELOG.md)** - Version history and release notes
 
-```
-USAGE
-  $ test-agent hello world
+## Commands
 
-DESCRIPTION
-  Say hello world
+### `yar study <directory>`
 
-EXAMPLES
-  $ test-agent hello world
-  hello world! (./src/commands/hello/world.ts)
-```
+Study a directory and understand how it works recursively. The AI agent will:
+- Explore the directory structure
+- Read and analyze key files
+- Understand dependencies and architecture
+- Provide comprehensive insights
 
-_See code: [src/commands/hello/world.ts](https://github.com/dev/test-agent/blob/v0.0.0/src/commands/hello/world.ts)_
+**Examples:**
+```bash
+# Study the current directory
+yar study .
 
-## `test-agent help [COMMAND]`
+# Study a specific directory
+yar study ./src
 
-Display help for test-agent.
+# Direct the agent's focus with a message
+yar study . -m "Focus on security vulnerabilities"
 
-```
-USAGE
-  $ test-agent help [COMMAND...] [-n]
+# Study with piped context
+git diff | yar study .
 
-ARGUMENTS
-  COMMAND...  Command to show help for.
+# Save analysis to file
+yar study . -o analysis.md
 
-FLAGS
-  -n, --nested-commands  Include all nested commands in the output.
-
-DESCRIPTION
-  Display help for test-agent.
-```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.33/src/commands/help.ts)_
-
-## `test-agent plugins`
-
-List installed plugins.
-
-```
-USAGE
-  $ test-agent plugins [--json] [--core]
-
-FLAGS
-  --core  Show core plugins.
-
-GLOBAL FLAGS
-  --json  Format output as json.
-
-DESCRIPTION
-  List installed plugins.
-
-EXAMPLES
-  $ test-agent plugins
+# Combine all features
+git diff | yar study . -m "Analyze breaking changes" -o report.md
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.48/src/commands/plugins/index.ts)_
+**Features:**
+- Read-only operations (safe to run anywhere)
+- **Important messages**: Direct agent focus with `-m` flag
+- **Piped input support**: Provide context from other CLI commands
+- **Output to file**: Save analysis with `-o` flag
+- Visual feedback showing tool usage
+- Comprehensive analysis with structured output
+- Statistics and summaries
 
-## `test-agent plugins add PLUGIN`
+See [STUDY_COMMAND_FEATURES.md](./docs/STUDY_COMMAND_FEATURES.md) for detailed documentation.
 
-Installs a plugin into test-agent.
+### `yar ui-demo`
 
-```
-USAGE
-  $ test-agent plugins add PLUGIN... [--json] [-f] [-h] [-s | -v]
+Demonstrates the UI library capabilities including:
+- Colored messages (success, error, warning, info)
+- Tool usage displays with icons
+- Loading spinners
+- Data tables
+- Summary boxes
+- Tool statistics
 
-ARGUMENTS
-  PLUGIN...  Plugin to install.
+Run this command to see all available UI components!
 
-FLAGS
-  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
-  -h, --help     Show CLI help.
-  -s, --silent   Silences npm output.
-  -v, --verbose  Show verbose npm output.
+## UI Library
 
-GLOBAL FLAGS
-  --json  Format output as json.
+YAR includes a comprehensive UI library for building beautiful CLI interfaces. All commands use this library to provide a consistent, modern user experience.
 
-DESCRIPTION
-  Installs a plugin into test-agent.
+**Key Features:**
+- 🎨 Rich colors with chalk
+- 🔄 Elegant spinners with ora
+- 📊 Beautiful tables with cli-table3
+- 📦 Boxed content with boxen
+- 🌈 Gradient text for headers
+- 🎯 Unicode icons with figures
+- 📈 Automatic tool usage tracking
 
-  Uses npm to install plugins.
+See [UI_LIBRARY.md](./docs/UI_LIBRARY.md) for complete documentation and examples.
 
-  Installation of a user-installed plugin will override a core plugin.
-
-  Use the TEST_AGENT_NPM_LOG_LEVEL environment variable to set the npm loglevel.
-  Use the TEST_AGENT_NPM_REGISTRY environment variable to set the npm registry.
-
-ALIASES
-  $ test-agent plugins add
-
-EXAMPLES
-  Install a plugin from npm registry.
-
-    $ test-agent plugins add myplugin
-
-  Install a plugin from a github url.
-
-    $ test-agent plugins add https://github.com/someuser/someplugin
-
-  Install a plugin from a github slug.
-
-    $ test-agent plugins add someuser/someplugin
-```
-
-## `test-agent plugins:inspect PLUGIN...`
-
-Displays installation properties of a plugin.
+## Architecture
 
 ```
-USAGE
-  $ test-agent plugins inspect PLUGIN...
-
-ARGUMENTS
-  PLUGIN...  [default: .] Plugin to inspect.
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-GLOBAL FLAGS
-  --json  Format output as json.
-
-DESCRIPTION
-  Displays installation properties of a plugin.
-
-EXAMPLES
-  $ test-agent plugins inspect myplugin
+yar/
+├── src/
+│   ├── commands/          # CLI commands
+│   │   ├── study.ts       # Study command
+│   │   └── ui-demo.ts     # UI demo command
+│   ├── lib/               # Shared libraries
+│   │   ├── ui.ts          # Rich UI library
+│   │   └── ui-example.ts  # Usage examples
+│   └── index.ts           # Entry point
+├── bin/                   # Executables
+├── dist/                  # Compiled output
+└── docs/                  # Documentation
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.48/src/commands/plugins/inspect.ts)_
+## Development
 
-## `test-agent plugins install PLUGIN`
+```bash
+# Install dependencies
+pnpm install
 
-Installs a plugin into test-agent.
+# Build
+pnpm run build
 
-```
-USAGE
-  $ test-agent plugins install PLUGIN... [--json] [-f] [-h] [-s | -v]
+# Run in development mode
+./bin/dev.js [command]
 
-ARGUMENTS
-  PLUGIN...  Plugin to install.
-
-FLAGS
-  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
-  -h, --help     Show CLI help.
-  -s, --silent   Silences npm output.
-  -v, --verbose  Show verbose npm output.
-
-GLOBAL FLAGS
-  --json  Format output as json.
-
-DESCRIPTION
-  Installs a plugin into test-agent.
-
-  Uses npm to install plugins.
-
-  Installation of a user-installed plugin will override a core plugin.
-
-  Use the TEST_AGENT_NPM_LOG_LEVEL environment variable to set the npm loglevel.
-  Use the TEST_AGENT_NPM_REGISTRY environment variable to set the npm registry.
-
-ALIASES
-  $ test-agent plugins add
-
-EXAMPLES
-  Install a plugin from npm registry.
-
-    $ test-agent plugins install myplugin
-
-  Install a plugin from a github url.
-
-    $ test-agent plugins install https://github.com/someuser/someplugin
-
-  Install a plugin from a github slug.
-
-    $ test-agent plugins install someuser/someplugin
+# Lint
+pnpm run lint
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.48/src/commands/plugins/install.ts)_
+## Evaluations
 
-## `test-agent plugins link PATH`
+Tests have been removed in favor of evaluations. Evals will be added in the future to better assess AI agent performance and behavior.
 
-Links a plugin into the CLI for development.
+## Environment Variables
 
-```
-USAGE
-  $ test-agent plugins link PATH [-h] [--install] [-v]
+- `ANTHROPIC_API_KEY`: Your Anthropic API key (required for AI features)
 
-ARGUMENTS
-  PATH  [default: .] path to plugin
+## Technologies
 
-FLAGS
-  -h, --help          Show CLI help.
-  -v, --verbose
-      --[no-]install  Install dependencies after linking the plugin.
+- **Runtime**: Node.js 18+
+- **Language**: TypeScript with strict mode
+- **CLI Framework**: oclif 4
+- **AI**: Claude Agent SDK
+- **UI Libraries**: chalk, ora, cli-table3, boxen, gradient-string, figures
+- **Package Manager**: pnpm
 
-DESCRIPTION
-  Links a plugin into the CLI for development.
+## How It Works
 
-  Installation of a linked plugin will override a user-installed or core plugin.
+YAR uses the Claude Agent SDK to create AI agents that can:
 
-  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
-  command will override the user-installed or core plugin implementation. This is useful for development work.
+1. **Read & Search**: Use tools like Read, Grep, Glob, and ListDir
+2. **Analyze**: Claude's advanced reasoning understands code structure
+3. **Explain**: Provides clear, comprehensive insights
+4. **Track**: Visual feedback shows all operations in real-time
 
+The study command gives the AI agent permission to explore directories and files, but restricts it to read-only operations for safety.
 
-EXAMPLES
-  $ test-agent plugins link myplugin
-```
+## Creating New Commands
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.48/src/commands/plugins/link.ts)_
+To create a new command that uses the rich UI:
 
-## `test-agent plugins remove [PLUGIN]`
+```typescript
+import {Args, Command} from '@oclif/core'
+import {query} from '@anthropic-ai/claude-agent-sdk'
+import {ui} from '../lib/ui.js'
 
-Removes a plugin from the CLI.
+export default class MyCommand extends Command {
+  static args = {
+    input: Args.string({required: true}),
+  }
 
-```
-USAGE
-  $ test-agent plugins remove [PLUGIN...] [-h] [-v]
-
-ARGUMENTS
-  PLUGIN...  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Removes a plugin from the CLI.
-
-ALIASES
-  $ test-agent plugins unlink
-  $ test-agent plugins remove
-
-EXAMPLES
-  $ test-agent plugins remove myplugin
+  async run(): Promise<void> {
+    const {args} = await this.parse(MyCommand)
+    
+    ui.header('🚀 My Command')
+    ui.info(`Processing: ${args.input}`)
+    
+    // Your command logic here
+    
+    ui.success('Complete!')
+  }
+}
 ```
 
-## `test-agent plugins reset`
+See [UI_LIBRARY.md](./docs/UI_LIBRARY.md) for full documentation.
 
-Remove all user-installed and linked plugins.
+## Contributing
 
-```
-USAGE
-  $ test-agent plugins reset [--hard] [--reinstall]
+1. Create a new branch
+2. Make your changes
+3. Run tests and linting
+4. Submit a pull request
 
-FLAGS
-  --hard       Delete node_modules and package manager related files in addition to uninstalling plugins.
-  --reinstall  Reinstall all plugins after uninstalling.
-```
+## License
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.48/src/commands/plugins/reset.ts)_
+MIT
 
-## `test-agent plugins uninstall [PLUGIN]`
+## Author
 
-Removes a plugin from the CLI.
-
-```
-USAGE
-  $ test-agent plugins uninstall [PLUGIN...] [-h] [-v]
-
-ARGUMENTS
-  PLUGIN...  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Removes a plugin from the CLI.
-
-ALIASES
-  $ test-agent plugins unlink
-  $ test-agent plugins remove
-
-EXAMPLES
-  $ test-agent plugins uninstall myplugin
-```
-
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.48/src/commands/plugins/uninstall.ts)_
-
-## `test-agent plugins unlink [PLUGIN]`
-
-Removes a plugin from the CLI.
-
-```
-USAGE
-  $ test-agent plugins unlink [PLUGIN...] [-h] [-v]
-
-ARGUMENTS
-  PLUGIN...  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Removes a plugin from the CLI.
-
-ALIASES
-  $ test-agent plugins unlink
-  $ test-agent plugins remove
-
-EXAMPLES
-  $ test-agent plugins unlink myplugin
-```
-
-## `test-agent plugins update`
-
-Update installed plugins.
-
-```
-USAGE
-  $ test-agent plugins update [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Update installed plugins.
-```
-
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.48/src/commands/plugins/update.ts)_
-<!-- commandsstop -->
+Alireza Sheikholmolouki
