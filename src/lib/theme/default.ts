@@ -258,6 +258,17 @@ export class DefaultTheme implements Theme {
     if (!input) return ''
     
     switch (toolName) {
+      case 'Bash': {
+        const {command} = input
+        if (command && typeof command === 'string') {
+          // Truncate long commands
+          const maxLength = 60
+          const cmd = command.length > maxLength ? command.slice(0, maxLength) + '...' : command
+          return `→ ${cmd}`
+        }
+        return ''
+      }
+
       case 'Glob': {
         const {glob_pattern: globPattern1, globPattern: globPattern2, pattern} = input
         const resolvedPattern = pattern || globPattern1 || globPattern2
