@@ -13,40 +13,40 @@ import {theme} from '../lib/theme/index.js'
  * Agent configuration options
  */
 export interface AgentConfig {
-  /** System prompt for the agent */
-  systemPrompt: string
   /** Allowed tools for the agent to use */
   allowedTools: string[]
+  /** System prompt for the agent */
+  systemPrompt: string
 }
 
 /**
  * Agent execution options
  */
 export interface AgentExecutionOptions {
-  /** The prompt to send to the agent */
-  prompt: string
   /** Agent configuration */
   config: AgentConfig
-  /** Whether to show UI feedback */
-  showUI?: boolean
   /** Optional callback for processing text blocks */
   onText?: (text: string) => void
   /** Optional callback for processing tool uses */
   onToolUse?: (toolName: string, input: unknown) => void
+  /** The prompt to send to the agent */
+  prompt: string
+  /** Whether to show UI feedback */
+  showUI?: boolean
 }
 
 /**
  * Agent execution result
  */
 export interface AgentExecutionResult {
-  /** Accumulated text output from the agent */
-  text: string
-  /** Number of messages exchanged */
-  messageCount: number
-  /** Number of tools used */
-  toolUseCount: number
   /** Duration in seconds */
   duration: number
+  /** Number of messages exchanged */
+  messageCount: number
+  /** Accumulated text output from the agent */
+  text: string
+  /** Number of tools used */
+  toolUseCount: number
 }
 
 /**
@@ -92,7 +92,7 @@ export async function executeAgent(
       const {content, stop_reason: stopReason} = message.message
 
       processAssistantMessage(content, {
-        onBlock: (block) => {
+        onBlock(block) {
           if (block.type === 'text' && block.text && block.text.trim()) {
             textOutput += block.text + '\n'
             if (onText) {

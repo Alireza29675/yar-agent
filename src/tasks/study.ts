@@ -1,5 +1,12 @@
+import {fileURLToPath} from 'node:url'
+import {dirname, join} from 'node:path'
+
 import {createReadOnlyAgentConfig, executeAgent} from '../services/agent.js'
-import {buildStudyPrompt} from '../services/prompt-builder.js'
+import {buildPrompt, loadPromptFromFile} from '../services/prompt-builder.js'
+
+// Get current directory in ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 /**
  * Study Task Options
@@ -30,6 +37,31 @@ export interface StudyResult {
 }
 
 /**
+ * Build a study-specific prompt for code analysis
+ *
+ * @param directory - Directory to analyze
+ * @param message - Optional user message
+ * @param context - Optional additional context
+ * @returns The formatted study prompt
+ */
+async function buildStudyPrompt(
+  directory: string,
+  message?: string,
+  context?: string,
+): Promise<string> {
+  // Load base prompt from markdown file with variable substitution
+  const promptFile = join(__dirname, 'prompts', 'study.md')
+  const basePrompt = await loadPromptFromFile(promptFile, {directory})
+
+  // Add message and context using the prompt builder
+  return buildPrompt({
+    basePrompt,
+    context,
+    message,
+  })
+}
+
+/**
  * Study Task
  *
  * Analyzes a directory using AI to understand its structure,
@@ -38,8 +70,8 @@ export interface StudyResult {
 export async function studyTask(options: StudyOptions): Promise<StudyResult> {
   const {context, directory, message, showUI = true} = options
 
-  // Build the prompt using the prompt builder service
-  const prompt = buildStudyPrompt(directory, message, context)
+  // Build the prompt using the task-specific prompt builder
+  const prompt = await buildStudyPrompt(directory, message, context)
 
   // Create agent configuration
   const config = createReadOnlyAgentConfig()

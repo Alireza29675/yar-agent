@@ -33,9 +33,10 @@ pnpm run lint
 
 - `src/commands/` - oclif command implementations (thin layer for CLI parsing)
 - `src/tasks/` - Business logic orchestration for commands (e.g., `studyTask()`)
+  - `prompts/` - Task-specific prompts as Markdown files with variable substitution
 - `src/services/` - Reusable services for core functionality
   - `agent.ts` - AI agent orchestration and message handling
-  - `prompt-builder.ts` - Structured prompt generation with context
+  - `prompt-builder.ts` - MD file loading, variable substitution, context/message formatting
 - `src/utils/` - Shared utilities
   - `stdin.ts` - Stdin reading for piped input
 - `src/lib/theme/` - Theme system for UI rendering
@@ -60,7 +61,7 @@ The codebase follows a layered architecture:
 
 3. **Services** (`src/services/`) - Reusable business logic
    - `agent.ts`: Execute AI agents, handle messages, track stats
-   - `prompt-builder.ts`: Build structured prompts with context
+   - `prompt-builder.ts`: Load MD files, substitute variables, add context/messages
 
 4. **Utils** (`src/utils/`) - Pure utility functions
    - `stdin.ts`: Read from piped input
@@ -107,17 +108,23 @@ import { studyTask } from '../tasks/study.js'
 **Task** (`src/tasks/study.ts`):
 ```typescript
 import { executeAgent, createReadOnlyAgentConfig } from '../services/agent.js'
-import { buildStudyPrompt } from '../services/prompt-builder.js'
+import { buildPrompt, loadPromptFromFile } from '../services/prompt-builder.js'
 
-// 1. Build prompt: const prompt = buildStudyPrompt(directory, message, context)
-// 2. Configure agent: const config = createReadOnlyAgentConfig()
-// 3. Execute: const result = await executeAgent({ prompt, config, showUI })
-// 4. Return result
+// 1. Load base prompt from MD: loadPromptFromFile('prompts/study.md', { directory })
+// 2. Add context/message: buildPrompt({ basePrompt, message, context })
+// 3. Configure agent: const config = createReadOnlyAgentConfig()
+// 4. Execute: const result = await executeAgent({ prompt, config, showUI })
+// 5. Return result
 ```
+
+**Prompt Files** (`src/tasks/prompts/`):
+- Task-specific prompts stored as Markdown files
+- Variables defined as `{{variableName}}`
+- Example: `study.md` contains the base prompt with `{{directory}}` variable
 
 **Services**:
 - `agent.ts`: Handles message streaming, tool tracking, UI updates
-- `prompt-builder.ts`: Formats prompts with user messages and context
+- `prompt-builder.ts`: Loads MD files, substitutes variables, adds context/messages
 
 Key features:
 - `-m` flag: Important messages to direct agent focus
@@ -159,6 +166,43 @@ The agent service automatically:
 - Tracks tool usage statistics
 - Accumulates text output
 
+## Prompt File System
+
+Prompts are stored as Markdown files in `src/tasks/prompts/` with variable substitution:
+
+**Creating a prompt file** (`src/tasks/prompts/example.md`):
+```markdown
+Analyze the {{target}} and look for {{issue_type}} issues.
+
+Focus on {{area}} and provide detailed recommendations.
+```
+
+**Loading and using the prompt**:
+```typescript
+import { loadPromptFromFile, buildPrompt } from '../services/prompt-builder.js'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+async function buildMyPrompt(target: string, issueType: string) {
+  // Load base prompt with variable substitution
+  const basePrompt = await loadPromptFromFile(
+    join(__dirname, 'prompts', 'example.md'),
+    { target, issue_type: issueType, area: 'security' }
+  )
+
+  // Add user message and context
+  return buildPrompt({ basePrompt, message, context })
+}
+```
+
+**Benefits**:
+- Prompts are easy to read and edit (Markdown format)
+- Variables use clear `{{variableName}}` syntax
+- Task-specific prompts stay with their tasks
+- Generic prompt processing (context, messages) handled by service
+
 ## Important Conventions
 
 1. **ES Modules**: Always use `.js` extensions in imports (TypeScript will resolve to `.ts` files)
@@ -168,10 +212,11 @@ The agent service automatically:
    - Services: Reusable business logic (agent, prompt-builder)
    - Utils: Pure utility functions (stdin)
 3. **Separation of Concerns**: Extract reusable logic into services/utils, not tasks
-4. **Theme Usage**: Always use `theme()` from `./lib/theme/index.js`, never import `ui` directly
-5. **Agent Service**: Use `executeAgent()` service instead of directly calling Claude SDK
-6. **Tool Restrictions**: Use `createReadOnlyAgentConfig()` for read-only operations
-7. **API Key**: Requires `ANTHROPIC_API_KEY` environment variable
+4. **Prompt Files**: Store task-specific prompts in `src/tasks/prompts/` as MD files with `{{variables}}`
+5. **Theme Usage**: Always use `theme()` from `./lib/theme/index.js`, never import `ui` directly
+6. **Agent Service**: Use `executeAgent()` service instead of directly calling Claude SDK
+7. **Tool Restrictions**: Use `createReadOnlyAgentConfig()` for read-only operations
+8. **API Key**: Requires `ANTHROPIC_API_KEY` environment variable
 
 ## Testing
 
@@ -182,3 +227,4 @@ No traditional tests exist. The project uses evaluations (evals) to assess AI ag
 Commands can operate in two modes:
 - **Interactive**: Full UI with colors, spinners, tool tracking (`showUI: true`)
 - **Silent**: Minimal output for file writing or piping (`showUI: false`)
+- keep the docs up to date.

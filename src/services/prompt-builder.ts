@@ -2,8 +2,12 @@
  * Prompt Builder Service
  *
  * Builds structured prompts for AI agents with support for context,
- * messages, and formatting.
+ * messages, and formatting. Includes support for loading prompts from
+ * Markdown files with variable substitution.
  */
+
+import * as fs from 'node:fs/promises'
+import * as path from 'node:path'
 
 /**
  * Options for building prompts
@@ -11,10 +15,10 @@
 export interface PromptBuilderOptions {
   /** Base prompt text */
   basePrompt: string
-  /** Optional important message from user to highlight */
-  message?: string
   /** Optional additional context (e.g., piped input) */
   context?: string
+  /** Optional important message from user to highlight */
+  message?: string
 }
 
 /**
@@ -67,25 +71,57 @@ Please consider this context in your analysis. This might be git diffs, command 
 }
 
 /**
- * Build a study-specific prompt for code analysis
+ * Load a prompt from a Markdown file and substitute variables
  *
- * @param directory - Directory to analyze
- * @param message - Optional user message
- * @param context - Optional additional context
- * @returns The formatted study prompt
+ * @param filePath - Path to the Markdown file (relative to project root or absolute)
+ * @param variables - Object containing variable values for substitution
+ * @returns The prompt text with variables substituted
+ *
+ * @example
+ * ```typescript
+ * // Given study.md contains: "Analyze {{directory}} for {{type}} issues"
+ * const prompt = await loadPromptFromFile('./prompts/study.md', {
+ *   directory: '/src',
+ *   type: 'security'
+ * })
+ * // Returns: "Analyze /src for security issues"
+ * ```
  */
-export function buildStudyPrompt(
-  directory: string,
-  message?: string,
-  context?: string,
-): string {
-  return buildPrompt({
-    basePrompt: `Study the directory at path: ${directory}
+export async function loadPromptFromFile(
+  filePath: string,
+  variables: Record<string, string> = {},
+): Promise<string> {
+  // Read the markdown file
+  const content = await fs.readFile(filePath, 'utf8')
 
-Develop a thorough understanding of this directory and its contents. Explore recursively and look at parent directories if needed for context.
+  // Replace variables in the format {{variableName}}
+  let processed = content
+  for (const [key, value] of Object.entries(variables)) {
+    const pattern = new RegExp(`\\{\\{${key}\\}\\}`, 'g')
+    processed = processed.replace(pattern, value)
+  }
 
-Provide a comprehensive analysis that explains what this codebase is, how it works, and any important insights about its structure, dependencies, architecture, and functionality.`,
-    context,
-    message,
-  })
+  return processed.trim()
+}
+
+/**
+ * Load a prompt from a file relative to a base directory
+ *
+ * @param baseDir - Base directory (e.g., __dirname)
+ * @param fileName - File name relative to base directory
+ * @param variables - Variables for substitution
+ * @returns The processed prompt
+ *
+ * @example
+ * ```typescript
+ * const prompt = await loadPromptFromDir(__dirname, './prompts/study.md', { directory: '/src' })
+ * ```
+ */
+export async function loadPromptFromDir(
+  baseDir: string,
+  fileName: string,
+  variables: Record<string, string> = {},
+): Promise<string> {
+  const filePath = path.join(baseDir, fileName)
+  return loadPromptFromFile(filePath, variables)
 }
