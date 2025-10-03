@@ -1,6 +1,7 @@
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
+import {CODE_ANALYSIS_SYSTEM_PROMPT} from '../config/system-prompts.js'
 import {createReadOnlyAgentConfig, executeAgent} from '../services/agent.js'
 import {buildPrompt, loadPromptFromFile} from '../services/prompt-builder.js'
 
@@ -73,8 +74,8 @@ export async function studyTask(options: StudyOptions): Promise<StudyResult> {
   // Build the prompt using the task-specific prompt builder
   const prompt = await buildStudyPrompt(directory, message, context)
 
-  // Create agent configuration
-  const config = createReadOnlyAgentConfig()
+  // Create agent configuration with code analysis system prompt
+  const config = createReadOnlyAgentConfig(CODE_ANALYSIS_SYSTEM_PROMPT)
 
   // Execute the agent
   const result = await executeAgent({

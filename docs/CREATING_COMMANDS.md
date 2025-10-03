@@ -53,6 +53,7 @@ Create `src/tasks/review.ts`:
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
+import {CODE_ANALYSIS_SYSTEM_PROMPT} from '../config/system-prompts.js'
 import {createReadOnlyAgentConfig, executeAgent} from '../services/agent.js'
 import {buildPrompt, loadPromptFromFile} from '../services/prompt-builder.js'
 
@@ -131,8 +132,8 @@ export async function reviewTask(options: ReviewOptions): Promise<ReviewResult> 
   // Build the prompt
   const prompt = await buildReviewPrompt(directory, specificFile, message, context)
 
-  // Create agent configuration (read-only for safety)
-  const config = createReadOnlyAgentConfig()
+  // Create agent configuration with system prompt (read-only for safety)
+  const config = createReadOnlyAgentConfig(CODE_ANALYSIS_SYSTEM_PROMPT)
 
   // Execute the agent
   const result = await executeAgent({
@@ -446,17 +447,69 @@ export async function myTask(...): Promise<TaskResult> { ... }
 ### Read-Only (Recommended for Analysis)
 
 ```typescript
-const config = createReadOnlyAgentConfig()
+import { CODE_ANALYSIS_SYSTEM_PROMPT } from '../config/system-prompts.js'
+import { createReadOnlyAgentConfig } from '../services/agent.js'
+
+const config = createReadOnlyAgentConfig(CODE_ANALYSIS_SYSTEM_PROMPT)
 // Tools: Read, Grep, Glob, ListDir
+```
+
+### Available System Prompts
+
+From `src/config/system-prompts.ts`:
+
+```typescript
+// For code analysis (read-only operations)
+import { CODE_ANALYSIS_SYSTEM_PROMPT } from '../config/system-prompts.js'
+
+// For code generation/modification
+import { CODE_GENERATION_SYSTEM_PROMPT } from '../config/system-prompts.js'
+
+// For general purpose tasks
+import { GENERAL_ASSISTANT_SYSTEM_PROMPT } from '../config/system-prompts.js'
+```
+
+### Available Tool Sets
+
+From `src/config/tools.ts`:
+
+```typescript
+import { READ_ONLY_TOOLS, FILE_MODIFICATION_TOOLS, EXECUTION_TOOLS, ALL_TOOLS } from '../config/tools.js'
+
+// READ_ONLY_TOOLS: ['Read', 'Grep', 'Glob', 'ListDir']
+// FILE_MODIFICATION_TOOLS: ['Write', 'Edit']
+// EXECUTION_TOOLS: ['Bash']
+// ALL_TOOLS: All available tools
 ```
 
 ### Custom Configuration
 
 ```typescript
+import { type AvailableTool, READ_ONLY_TOOLS } from '../config/tools.js'
+
 const config = {
   systemPrompt: `You are a specialized assistant that...`,
-  allowedTools: ['Read', 'Grep', 'Write'],  // Specify exactly what you need
+  allowedTools: [...READ_ONLY_TOOLS, 'Write'] as AvailableTool[],  // Combine tool sets
 }
+```
+
+### Creating Custom System Prompts
+
+If none of the provided system prompts fit your needs, create a custom one:
+
+```typescript
+const CUSTOM_SYSTEM_PROMPT = `You are a specialized assistant that performs X task.
+
+You have access to these tools: Read, Grep, Write.
+
+Guidelines:
+- Be specific about what you're doing
+- Follow existing code patterns
+- Ask for clarification if needed
+
+Always explain your actions clearly.`
+
+const config = createReadOnlyAgentConfig(CUSTOM_SYSTEM_PROMPT)
 ```
 
 ### System Prompt Guidelines
@@ -465,6 +518,7 @@ const config = {
 - Clearly state any restrictions
 - Explain the expected output format
 - Mention any safety constraints
+- List available tools explicitly
 
 ## Error Handling
 

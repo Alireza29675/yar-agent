@@ -37,6 +37,9 @@ pnpm run lint
 - `src/services/` - Reusable services for core functionality
   - `agent.ts` - AI agent orchestration and message handling
   - `prompt-builder.ts` - MD file loading, variable substitution, context/message formatting
+- `src/config/` - Configuration and constants
+  - `tools.ts` - Available tools, tool sets (read-only, file modification, etc.)
+  - `system-prompts.ts` - Reusable system prompts for different task types
 - `src/utils/` - Shared utilities
   - `stdin.ts` - Stdin reading for piped input
 - `src/lib/theme/` - Theme system for UI rendering
@@ -107,15 +110,20 @@ import { studyTask } from '../tasks/study.js'
 
 **Task** (`src/tasks/study.ts`):
 ```typescript
+import { CODE_ANALYSIS_SYSTEM_PROMPT } from '../config/system-prompts.js'
 import { executeAgent, createReadOnlyAgentConfig } from '../services/agent.js'
 import { buildPrompt, loadPromptFromFile } from '../services/prompt-builder.js'
 
 // 1. Load base prompt from MD: loadPromptFromFile('prompts/study.md', { directory })
 // 2. Add context/message: buildPrompt({ basePrompt, message, context })
-// 3. Configure agent: const config = createReadOnlyAgentConfig()
+// 3. Configure agent with system prompt: createReadOnlyAgentConfig(CODE_ANALYSIS_SYSTEM_PROMPT)
 // 4. Execute: const result = await executeAgent({ prompt, config, showUI })
 // 5. Return result
 ```
+
+**Configuration** (`src/config/`):
+- `tools.ts`: Tool types, tool sets (READ_ONLY_TOOLS, FILE_MODIFICATION_TOOLS, etc.)
+- `system-prompts.ts`: Reusable system prompts (CODE_ANALYSIS_SYSTEM_PROMPT, etc.)
 
 **Prompt Files** (`src/tasks/prompts/`):
 - Task-specific prompts stored as Markdown files
@@ -134,12 +142,14 @@ Key features:
 
 ## Agent Service Usage
 
-Use the `agent.ts` service instead of directly using the SDK:
+Use the `agent.ts` service with system prompts and tool configurations:
 
 ```typescript
+import { CODE_ANALYSIS_SYSTEM_PROMPT } from '../config/system-prompts.js'
 import { executeAgent, createReadOnlyAgentConfig } from '../services/agent.js'
 
-const config = createReadOnlyAgentConfig() // Pre-configured read-only tools
+// Read-only agent with a system prompt
+const config = createReadOnlyAgentConfig(CODE_ANALYSIS_SYSTEM_PROMPT)
 const result = await executeAgent({
   prompt: 'Your task description',
   config,
@@ -149,16 +159,31 @@ const result = await executeAgent({
 // Returns: { text, messageCount, toolUseCount, duration }
 ```
 
-For custom configurations:
+### Available System Prompts
+
+From `src/config/system-prompts.ts`:
+- `CODE_ANALYSIS_SYSTEM_PROMPT` - For analyzing/understanding code (read-only)
+- `CODE_GENERATION_SYSTEM_PROMPT` - For generating/modifying code
+- `GENERAL_ASSISTANT_SYSTEM_PROMPT` - General purpose assistant
+
+### Available Tools
+
+From `src/config/tools.ts`:
+- `READ_ONLY_TOOLS` - `['Read', 'Grep', 'Glob', 'ListDir']`
+- `FILE_MODIFICATION_TOOLS` - `['Write', 'Edit']`
+- `EXECUTION_TOOLS` - `['Bash']`
+- `ALL_TOOLS` - All available tools
+
+### Custom Configuration
 
 ```typescript
+import { type AvailableTool, READ_ONLY_TOOLS } from '../config/tools.js'
+
 const config = {
-  systemPrompt: 'Your custom system prompt',
-  allowedTools: ['Read', 'Grep', 'Write'], // Specify tools
+  systemPrompt: 'Your custom system prompt here',
+  allowedTools: [...READ_ONLY_TOOLS, 'Write'] as AvailableTool[], // Add Write to read-only
 }
 ```
-
-Available tools: `Read`, `Write`, `Grep`, `Glob`, `ListDir`, `Bash`, `Edit`
 
 The agent service automatically:
 - Handles message streaming from the SDK

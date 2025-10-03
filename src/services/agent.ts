@@ -7,6 +7,7 @@
 
 import {query} from '@anthropic-ai/claude-agent-sdk'
 
+import {type AvailableTool, READ_ONLY_TOOLS} from '../config/tools.js'
 import {theme} from '../lib/theme/index.js'
 
 /**
@@ -14,7 +15,7 @@ import {theme} from '../lib/theme/index.js'
  */
 export interface AgentConfig {
   /** Allowed tools for the agent to use */
-  allowedTools: string[]
+  allowedTools: AvailableTool[]
   /** System prompt for the agent */
   systemPrompt: string
 }
@@ -179,18 +180,19 @@ function processAssistantMessage(
 /**
  * Create a read-only agent configuration
  *
- * @param systemPrompt - Optional custom system prompt
+ * @param systemPrompt - System prompt for the agent
  * @returns Agent configuration with read-only tools
+ *
+ * @example
+ * ```typescript
+ * import { CODE_ANALYSIS_SYSTEM_PROMPT } from '../config/system-prompts.js'
+ *
+ * const config = createReadOnlyAgentConfig(CODE_ANALYSIS_SYSTEM_PROMPT)
+ * ```
  */
-export function createReadOnlyAgentConfig(systemPrompt?: string): AgentConfig {
+export function createReadOnlyAgentConfig(systemPrompt: string): AgentConfig {
   return {
-    allowedTools: ['Read', 'Grep', 'Glob', 'ListDir'],
-    systemPrompt:
-      systemPrompt ||
-      `You are a code analysis assistant. Your goal is to develop a deep, comprehensive understanding of codebases.
-
-You can ONLY use read and search operations. If you need to perform any other action (like writing files, executing commands, etc.), you MUST ask the user for permission.
-
-Deliver clear, insightful analysis that reveals how the codebase works, what it does, and how its components fit together.`,
+    allowedTools: READ_ONLY_TOOLS,
+    systemPrompt,
   }
 }
