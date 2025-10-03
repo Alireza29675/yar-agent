@@ -20,9 +20,9 @@ Utils (pure functions)
 
 Let's create a hypothetical `review` command that analyzes code quality.
 
-### Step 1: Create the Prompt File
+### Step 1: Create the Task Prompt File
 
-Create `src/tasks/prompts/review.md`:
+Create `src/prompts/tasks/review.md`:
 
 ```markdown
 Review the code in directory: {{directory}}
@@ -54,7 +54,8 @@ import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {CODE_ANALYSIS_SYSTEM_PROMPT} from '../config/system-prompts.js'
-import {createReadOnlyAgentConfig, executeAgent} from '../services/agent.js'
+import {READ_ONLY_TOOLS} from '../config/tools.js'
+import {executeAgent} from '../services/agent.js'
 import {buildPrompt, loadPromptFromFile} from '../services/prompt-builder.js'
 
 // Get current directory in ES modules
@@ -106,8 +107,8 @@ async function buildReviewPrompt(
   message?: string,
   context?: string,
 ): Promise<string> {
-  // Load base prompt from markdown file with variable substitution
-  const promptFile = join(__dirname, 'prompts', 'review.md')
+  // Load base prompt from src/prompts/tasks/ with variable substitution
+  const promptFile = join(__dirname, '..', 'prompts', 'tasks', 'review.md')
   const basePrompt = await loadPromptFromFile(promptFile, {
     directory,
     specificFile: specificFile || '',
@@ -132,8 +133,11 @@ export async function reviewTask(options: ReviewOptions): Promise<ReviewResult> 
   // Build the prompt
   const prompt = await buildReviewPrompt(directory, specificFile, message, context)
 
-  // Create agent configuration with system prompt (read-only for safety)
-  const config = createReadOnlyAgentConfig(CODE_ANALYSIS_SYSTEM_PROMPT)
+  // Create agent configuration (read-only for safety)
+  const config = {
+    allowedTools: READ_ONLY_TOOLS,
+    systemPrompt: CODE_ANALYSIS_SYSTEM_PROMPT,
+  }
 
   // Execute the agent
   const result = await executeAgent({
@@ -412,7 +416,8 @@ const config = {
 
 - **Commands**: `src/commands/command-name.ts` (kebab-case)
 - **Tasks**: `src/tasks/task-name.ts` (kebab-case)
-- **Prompts**: `src/tasks/prompts/task-name.md` (matches task name)
+- **Task Prompts**: `src/prompts/tasks/task-name.md` (matches task name)
+- **System Prompts**: `src/prompts/system/prompt-name.md` (kebab-case)
 
 ## Variable Naming in Prompts
 
@@ -448,9 +453,12 @@ export async function myTask(...): Promise<TaskResult> { ... }
 
 ```typescript
 import { CODE_ANALYSIS_SYSTEM_PROMPT } from '../config/system-prompts.js'
-import { createReadOnlyAgentConfig } from '../services/agent.js'
+import { READ_ONLY_TOOLS } from '../config/tools.js'
 
-const config = createReadOnlyAgentConfig(CODE_ANALYSIS_SYSTEM_PROMPT)
+const config = {
+  allowedTools: READ_ONLY_TOOLS,
+  systemPrompt: CODE_ANALYSIS_SYSTEM_PROMPT,
+}
 // Tools: Read, Grep, Glob, ListDir
 ```
 
@@ -498,6 +506,8 @@ const config = {
 If none of the provided system prompts fit your needs, create a custom one:
 
 ```typescript
+import { READ_ONLY_TOOLS } from '../config/tools.js'
+
 const CUSTOM_SYSTEM_PROMPT = `You are a specialized assistant that performs X task.
 
 You have access to these tools: Read, Grep, Write.
@@ -509,7 +519,10 @@ Guidelines:
 
 Always explain your actions clearly.`
 
-const config = createReadOnlyAgentConfig(CUSTOM_SYSTEM_PROMPT)
+const config = {
+  allowedTools: READ_ONLY_TOOLS,
+  systemPrompt: CUSTOM_SYSTEM_PROMPT,
+}
 ```
 
 ### System Prompt Guidelines
@@ -544,7 +557,7 @@ try {
 
 When creating a new command, ensure:
 
-- [ ] Created prompt file in `src/tasks/prompts/`
+- [ ] Created task prompt file in `src/prompts/tasks/`
 - [ ] Created task in `src/tasks/` with interfaces
 - [ ] Created command in `src/commands/`
 - [ ] Added proper TypeScript types
@@ -561,16 +574,25 @@ When creating a new command, ensure:
 ```
 src/
 ├── commands/
-│   └── review.ts          # CLI command implementation
+│   └── review.ts              # CLI command implementation
 ├── tasks/
-│   ├── prompts/
-│   │   └── review.md      # Prompt with {{variables}}
-│   └── review.ts          # Task orchestration
+│   └── review.ts              # Task orchestration
+├── prompts/
+│   ├── system/                # System prompts (auto-loaded)
+│   │   ├── code-analysis.md
+│   │   ├── code-generation.md
+│   │   └── general-assistant.md
+│   └── tasks/                 # Task-specific prompts
+│       ├── study.md
+│       └── review.md          # Your new prompt with {{variables}}
+├── config/
+│   ├── tools.ts               # Tool configurations
+│   └── system-prompts.ts      # Loads system/*.md files
 ├── services/
-│   ├── agent.ts           # Reuse existing
-│   └── prompt-builder.ts  # Reuse existing
+│   ├── agent.ts               # Reuse existing
+│   └── prompt-builder.ts      # Reuse existing
 └── utils/
-    └── stdin.ts           # Reuse existing
+    └── stdin.ts               # Reuse existing
 ```
 
 ## Next Steps

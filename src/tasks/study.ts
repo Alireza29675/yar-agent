@@ -2,7 +2,8 @@ import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {CODE_ANALYSIS_SYSTEM_PROMPT} from '../config/system-prompts.js'
-import {createReadOnlyAgentConfig, executeAgent} from '../services/agent.js'
+import {READ_ONLY_TOOLS} from '../config/tools.js'
+import {executeAgent} from '../services/agent.js'
 import {buildPrompt, loadPromptFromFile} from '../services/prompt-builder.js'
 
 // Get current directory in ES modules
@@ -51,7 +52,7 @@ async function buildStudyPrompt(
   context?: string,
 ): Promise<string> {
   // Load base prompt from markdown file with variable substitution
-  const promptFile = join(__dirname, 'prompts', 'study.md')
+  const promptFile = join(__dirname, '..', 'prompts', 'tasks', 'study.md')
   const basePrompt = await loadPromptFromFile(promptFile, {directory})
 
   // Add message and context using the prompt builder
@@ -74,8 +75,11 @@ export async function studyTask(options: StudyOptions): Promise<StudyResult> {
   // Build the prompt using the task-specific prompt builder
   const prompt = await buildStudyPrompt(directory, message, context)
 
-  // Create agent configuration with code analysis system prompt
-  const config = createReadOnlyAgentConfig(CODE_ANALYSIS_SYSTEM_PROMPT)
+  // Create agent configuration
+  const config = {
+    allowedTools: READ_ONLY_TOOLS,
+    systemPrompt: CODE_ANALYSIS_SYSTEM_PROMPT,
+  }
 
   // Execute the agent
   const result = await executeAgent({

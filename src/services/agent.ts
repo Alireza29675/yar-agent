@@ -7,7 +7,8 @@
 
 import {query} from '@anthropic-ai/claude-agent-sdk'
 
-import {type AvailableTool, READ_ONLY_TOOLS} from '../config/tools.js'
+import type {AvailableTool} from '../config/tools.js'
+
 import {theme} from '../lib/theme/index.js'
 
 /**
@@ -177,22 +178,3 @@ function processAssistantMessage(
   }
 }
 
-/**
- * Create a read-only agent configuration
- *
- * @param systemPrompt - System prompt for the agent
- * @returns Agent configuration with read-only tools
- *
- * @example
- * ```typescript
- * import { CODE_ANALYSIS_SYSTEM_PROMPT } from '../config/system-prompts.js'
- *
- * const config = createReadOnlyAgentConfig(CODE_ANALYSIS_SYSTEM_PROMPT)
- * ```
- */
-export function createReadOnlyAgentConfig(systemPrompt: string): AgentConfig {
-  return {
-    allowedTools: READ_ONLY_TOOLS,
-    systemPrompt,
-  }
-}
