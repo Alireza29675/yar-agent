@@ -3,6 +3,7 @@ import * as fs from 'node:fs/promises'
 
 import {theme} from '../lib/theme/index.js'
 import {studyTask} from '../tasks/study.js'
+import {readStdin} from '../utils/stdin.js'
 
 export default class Study extends Command {
   static args = {
@@ -41,7 +42,7 @@ export default class Study extends Command {
     const {message, output} = flags
 
     // Check for piped input
-    const stdinInput = await this.readStdin()
+    const stdinInput = await readStdin()
 
     // Suppress visual UI if writing to file
     const showUI = !output
@@ -90,32 +91,5 @@ export default class Study extends Command {
       
       theme().success('Study completed successfully!')
     }
-  }
-
-  private async readStdin(): Promise<null | string> {
-    // Check if stdin is being piped
-    if (process.stdin.isTTY) {
-      return null
-    }
-
-    return new Promise((resolve) => {
-      let data = ''
-      process.stdin.setEncoding('utf8')
-      
-      process.stdin.on('data', (chunk) => {
-        data += chunk
-      })
-      
-      process.stdin.on('end', () => {
-        resolve(data.trim() || null)
-      })
-
-      // Timeout if no data comes
-      setTimeout(() => {
-        if (!data) {
-          resolve(null)
-        }
-      }, 100)
-    })
   }
 }
