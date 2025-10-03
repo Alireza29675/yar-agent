@@ -54,14 +54,16 @@ export function exampleUsage() {
     'Status': 'Success',
   })
 
-  // Display tool statistics
-  theme().displayToolStats()
+  // Display tool statistics (pass tool counts from agent execution)
+  const mockToolCounts = {
+    Read: 3,
+    Grep: 1,
+    ListDir: 1,
+  }
+  theme().displayToolStats(mockToolCounts)
 
   // Divider
   theme().divider()
-
-  // Reset stats for next operation
-  theme().resetToolStats()
 }
 
 /**
@@ -104,8 +106,12 @@ export function exampleToolTracking() {
   
   theme().toolUse('Read', {path: 'file3.ts'})
   theme().toolResult('Read', true, '75 lines')
-  
-  // Display statistics
-  theme().displayToolStats()
+
+  // Display statistics (pass tool counts from agent execution)
+  const mockToolCounts = {
+    Read: 3,
+    Grep: 1,
+  }
+  theme().displayToolStats(mockToolCounts)
 }
 

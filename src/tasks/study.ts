@@ -34,8 +34,10 @@ export interface StudyResult {
   duration: number
   /** Number of messages exchanged */
   messageCount: number
-  /** Number of tools used */
-  toolUseCount: number
+  /** Per-tool usage counts */
+  toolUseCounts: Record<string, number>
+  /** Total number of tools used */
+  totalToolUseCount: number
 }
 
 /**
@@ -92,7 +94,8 @@ export async function studyTask(options: StudyOptions): Promise<StudyResult> {
     analysis: result.text,
     duration: result.duration,
     messageCount: result.messageCount,
-    toolUseCount: result.toolUseCount,
+    toolUseCounts: result.toolUseCounts,
+    totalToolUseCount: result.totalToolUseCount,
   }
 }
 

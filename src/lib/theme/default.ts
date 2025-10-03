@@ -26,7 +26,6 @@ export class DefaultTheme implements Theme {
     warning: chalk.yellow,
   }
   private spinner: null | Ora = null
-  private toolUsageCount = new Map<string, number>()
 
   /**
    * Display assistant response text with proper formatting
@@ -59,10 +58,10 @@ export class DefaultTheme implements Theme {
   /**
    * Display tool usage statistics
    */
-  displayToolStats(): void {
-    if (this.toolUsageCount.size === 0) return
+  displayToolStats(toolUseCounts: Record<string, number>): void {
+    if (Object.keys(toolUseCounts).length === 0) return
 
-    const rows = [...this.toolUsageCount.entries()]
+    const rows = Object.entries(toolUseCounts)
       .sort((a, b) => b[1] - a[1])
       .map(([tool, count]) => [
         this.colors.tool(tool),
@@ -124,12 +123,6 @@ export class DefaultTheme implements Theme {
     console.log(this.colors.info(`${figures.info} ${message}`))
   }
 
-  /**
-   * Clear the tool usage count (useful for new operations)
-   */
-  resetToolStats(): void {
-    this.toolUsageCount.clear()
-  }
 
   /**
    * Display a section header
@@ -226,8 +219,6 @@ export class DefaultTheme implements Theme {
    * Display tool usage with icon and colored name
    */
   toolUse(toolName: string, input?: Record<string, unknown>): void {
-    this.toolUsageCount.set(toolName, (this.toolUsageCount.get(toolName) || 0) + 1)
-    
     const toolIcons: Record<string, string> = {
       Bash: '💻',
       Glob: '📁',
@@ -238,10 +229,8 @@ export class DefaultTheme implements Theme {
     }
 
     const icon = toolIcons[toolName] || '🔧'
-    const count = this.toolUsageCount.get(toolName)
     console.log(
       this.colors.tool(`${icon} ${toolName}`) +
-      this.colors.dim(` (${count}x)`) +
       (input ? this.colors.dim(` ${this.formatToolInput(toolName, input)}`) : '')
     )
   }

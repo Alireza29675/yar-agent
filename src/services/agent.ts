@@ -47,8 +47,10 @@ export interface AgentExecutionResult {
   messageCount: number
   /** Accumulated text output from the agent */
   text: string
-  /** Number of tools used */
-  toolUseCount: number
+  /** Per-tool usage counts */
+  toolUseCounts: Record<string, number>
+  /** Total number of tools used */
+  totalToolUseCount: number
 }
 
 /**
@@ -77,7 +79,7 @@ export async function executeAgent(
   const startTime = Date.now()
 
   let messageCount = 0
-  let toolUseCount = 0
+  const toolUseCounts: Record<string, number> = {}
   let textOutput = ''
 
   const result = await query({
@@ -101,7 +103,10 @@ export async function executeAgent(
               onText(block.text)
             }
           } else if (block.type === 'tool_use') {
-            toolUseCount++
+            if (block.name) {
+              toolUseCounts[block.name] = (toolUseCounts[block.name] || 0) + 1
+            }
+
             if (onToolUse && block.name) {
               onToolUse(block.name, block.input)
             }
@@ -121,12 +126,14 @@ export async function executeAgent(
   }
 
   const duration = Number.parseFloat(((Date.now() - startTime) / 1000).toFixed(2))
+  const totalToolUseCount = Object.values(toolUseCounts).reduce((sum, count) => sum + count, 0)
 
   return {
     duration,
     messageCount,
     text: textOutput.trim(),
-    toolUseCount,
+    toolUseCounts,
+    totalToolUseCount,
   }
 }
 

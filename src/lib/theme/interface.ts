@@ -20,7 +20,7 @@ export interface Theme {
   /**
    * Display tool usage statistics
    */
-  displayToolStats(): void
+  displayToolStats(toolUseCounts: Record<string, number>): void
 
   /**
    * Display a divider
@@ -51,11 +51,6 @@ export interface Theme {
    * Display info message
    */
   info(message: string): void
-
-  /**
-   * Clear the tool usage count (useful for new operations)
-   */
-  resetToolStats(): void
 
   /**
    * Display a section header

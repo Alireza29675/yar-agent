@@ -75,7 +75,7 @@ export default class Study extends Command {
     if (output) {
       await fs.writeFile(output, result.analysis, 'utf8')
       theme().success(`Analysis written to: ${output}`)
-      theme().info(`Duration: ${result.duration}s | Messages: ${result.messageCount} | Tools Used: ${result.toolUseCount}`)
+      theme().info(`Duration: ${result.duration}s | Messages: ${result.messageCount} | Tools Used: ${result.totalToolUseCount}`)
     } else {
       // Display completion summary
       theme().divider()
@@ -84,10 +84,10 @@ export default class Study extends Command {
         'Directory': directory,
         'Duration': `${result.duration}s`,
         'Messages': result.messageCount,
-        'Tools Used': result.toolUseCount,
+        'Tools Used': result.totalToolUseCount,
       })
 
-      theme().displayToolStats()
+      theme().displayToolStats(result.toolUseCounts)
       
       theme().success('Study completed successfully!')
     }

@@ -86,8 +86,14 @@ export default class UiDemo extends Command {
       'Status': '✓ Success',
     })
 
-    // Tool statistics
-    theme().displayToolStats()
+    // Tool statistics (pass tool counts from agent execution)
+    const mockToolCounts = {
+      Read: 2,
+      Grep: 1,
+      ListDir: 1,
+      Glob: 1,
+    }
+    theme().displayToolStats(mockToolCounts)
 
     // Final success
     theme().success('UI Demo completed successfully!')
