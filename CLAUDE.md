@@ -294,3 +294,5 @@ Commands can operate in two modes:
 - **Interactive**: Full UI with colors, spinners, tool tracking (`showUI: true`)
 - **Silent**: Minimal output for file writing or piping (`showUI: false`)
 - keep the docs up to date.
+- do pnpm build after each change. after meaningful changes which you are certain is going to stay, do a commit.
+- commit messages should be short but relevant. follow angular convention for commit messages

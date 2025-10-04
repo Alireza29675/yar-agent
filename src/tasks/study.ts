@@ -1,7 +1,6 @@
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
-import {CODE_ANALYSIS_SYSTEM_PROMPT} from '../config/system-prompts.js'
 import {READ_ONLY_TOOLS} from '../config/tools.js'
 import {executeAgent} from '../services/agent.js'
 import {buildPrompt, loadPromptFromFile} from '../services/prompt-builder.js'
@@ -80,7 +79,6 @@ export async function studyTask(options: StudyOptions): Promise<StudyResult> {
   // Create agent configuration
   const config = {
     allowedTools: READ_ONLY_TOOLS,
-    systemPrompt: CODE_ANALYSIS_SYSTEM_PROMPT,
   }
 
   // Execute the agent

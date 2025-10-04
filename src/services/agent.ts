@@ -5,11 +5,30 @@
  * and tracking execution statistics.
  */
 
+import {readFile} from 'node:fs/promises'
+import {dirname, join} from 'node:path'
+import {fileURLToPath} from 'node:url'
+
 import {query} from '@anthropic-ai/claude-agent-sdk'
 
 import type {AvailableTool} from '../config/tools.js'
 
 import {theme} from '../lib/theme/index.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+/**
+ * Load and cache the base system prompt
+ */
+let baseSystemPrompt: string | null = null
+
+async function getBaseSystemPrompt(): Promise<string> {
+  if (!baseSystemPrompt) {
+    const promptPath = join(__dirname, '..', 'prompts', 'system', 'app_introduction.md')
+    baseSystemPrompt = await readFile(promptPath, 'utf8')
+  }
+  return baseSystemPrompt
+}
 
 /**
  * Context item for providing additional information to the agent
@@ -29,8 +48,8 @@ export interface ContextItem {
 export interface AgentConfig {
   /** Allowed tools for the agent to use */
   allowedTools: AvailableTool[]
-  /** System prompt for the agent */
-  systemPrompt: string
+  /** Optional additional system prompt to append after base prompt */
+  systemPrompt?: string
 }
 
 /**
@@ -134,10 +153,16 @@ export async function executeAgent(
     finalPrompt = `${contextSection}${prompt}`
   }
 
+  // Build the system prompt
+  const basePrompt = await getBaseSystemPrompt()
+  const fullSystemPrompt = config.systemPrompt
+    ? `${basePrompt}\n\n${config.systemPrompt}`
+    : basePrompt
+
   const result = await query({
     options: {
       allowedTools: config.allowedTools,
-      systemPrompt: config.systemPrompt,
+      systemPrompt: fullSystemPrompt,
     },
     prompt: finalPrompt,
   })
