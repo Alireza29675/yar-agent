@@ -38,11 +38,16 @@ export default class Present extends Command {
       default: false,
       description: 'Serve presentation after generation',
     }),
+    update: Flags.boolean({
+      char: 'u',
+      default: false,
+      description: 'Update existing presentation with new content',
+    }),
   }
 
   public async run(): Promise<void> {
     const {flags} = await this.parse(Present)
-    const {file: files, message, output, serve} = flags
+    const {file: files, message, output, serve, update} = flags
 
     // Validate output filename
     if (!output.endsWith('.html')) {
@@ -51,6 +56,23 @@ export default class Present extends Command {
 
     // Resolve full path for output
     const fullOutputPath = resolve(output)
+
+    // Check if output file exists
+    let existingContent: string | undefined
+    try {
+      existingContent = await fs.readFile(output, 'utf8')
+      // File exists
+      if (!update) {
+        this.error(
+          `Output file already exists: ${output}\nUse --update or -u flag to update the existing presentation with new content.`
+        )
+      }
+    } catch {
+      // File doesn't exist, which is fine
+      if (update) {
+        this.error('Cannot use --update flag: output file does not exist yet.')
+      }
+    }
 
     // Read input from files and/or stdin
     const fileContents: string[] = []
@@ -70,8 +92,13 @@ export default class Present extends Command {
       fileContents.push(`# Piped Input\n\n${stdinContent}`)
     }
 
-    // Validate that at least one input source is provided
-    if (fileContents.length === 0) {
+    // If updating, add existing content at the beginning
+    if (existingContent) {
+      fileContents.unshift(`# Existing Presentation (you are updating this with new content)\n\n${existingContent}`)
+    }
+
+    // Validate that at least one input source is provided (excluding existing content for update)
+    if (fileContents.length === 0 || (update && fileContents.length === 1)) {
       this.error('No input provided. Use -f to specify files or pipe content via stdin.')
     }
 
@@ -80,14 +107,17 @@ export default class Present extends Command {
 
     // Display info
     console.log()
-    theme().info(`Creating presentation: ${fullOutputPath}`)
+    theme().info(`${update ? 'Updating' : 'Creating'} presentation: ${fullOutputPath}`)
     if (message) {
       theme().info(`Instructions: ${message}`)
+    }
+    if (update) {
+      theme().info(`Mode: Updating existing presentation`)
     }
     theme().divider()
 
     // Start spinner
-    theme().startSpinner('Creating slides...')
+    theme().startSpinner(`${update ? 'Updating' : 'Creating'} slides...`)
 
     // Run the present task (showUI: false to avoid logging HTML)
     const result = await presentTask({

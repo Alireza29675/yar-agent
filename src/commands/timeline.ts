@@ -33,33 +33,78 @@ export default class Timeline extends Command {
       description: 'Output file path to write the timeline to',
       required: true,
     }),
+    update: Flags.boolean({
+      char: 'u',
+      default: false,
+      description: 'Update existing output file with new findings',
+    }),
   }
 
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Timeline)
     const {directory} = args
-    const {message, output} = flags
+    const {message, output, update} = flags
 
     // Resolve full path
     const fullPath = resolve(directory)
 
+    // Check if output file exists
+    let existingContent: string | undefined
+    try {
+      existingContent = await fs.readFile(output, 'utf8')
+      // File exists
+      if (!update) {
+        this.error(
+          `Output file already exists: ${output}\nUse --update or -u flag to update the existing file with new findings.`
+        )
+      }
+    } catch {
+      // File doesn't exist, which is fine
+      if (update) {
+        this.error('Cannot use --update flag: output file does not exist yet.')
+      }
+    }
+
     // Check for piped input
     const stdinInput = await readStdin()
+
+    // Build context with existing content and stdin
+    let contextString: string | undefined
+    const contextParts: string[] = []
+
+    if (existingContent) {
+      contextParts.push(`EXISTING OUTPUT FILE CONTENT (you are updating this file with new findings):
+
+${existingContent}`)
+    }
+
+    if (stdinInput) {
+      contextParts.push(`PIPED INPUT:
+
+${stdinInput}`)
+    }
+
+    if (contextParts.length > 0) {
+      contextString = contextParts.join('\n\n---\n\n')
+    }
 
     // Always show UI
     const showUI = true
 
     // Display info
     console.log()
-    theme().info(`Tracing history: ${fullPath}`)
+    theme().info(`${update ? 'Updating timeline' : 'Tracing history'}: ${fullPath}`)
     if (message) {
       theme().info(`Focus: ${message}`)
+    }
+    if (update) {
+      theme().info(`Mode: Updating existing timeline`)
     }
     theme().divider()
 
     // Run the timeline task
     const result = await timelineTask({
-      context: stdinInput || undefined,
+      context: contextString,
       directory,
       message: message || undefined,
       showUI,
