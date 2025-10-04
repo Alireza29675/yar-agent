@@ -49,13 +49,12 @@ export default class Timeline extends Command {
     // Always show UI
     const showUI = true
 
-    // Display header
-    theme().header('YAR Timeline')
-    theme().info(`Analyzing: ${fullPath}`)
+    // Display info
+    console.log()
+    theme().info(`Tracing history: ${fullPath}`)
     if (message) {
       theme().info(`Focus: ${message}`)
     }
-
     theme().divider()
 
     // Run the timeline task

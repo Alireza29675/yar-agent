@@ -52,8 +52,8 @@ export default class Study extends Command {
     // Always show UI
     const showUI = true
 
-    // Display header
-    theme().header('YAR Study')
+    // Display info
+    console.log()
     theme().info(`Analyzing: ${fullPath}`)
     if (message) {
       theme().info(`Focus: ${message}`)

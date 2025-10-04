@@ -78,13 +78,12 @@ export default class Present extends Command {
     // Combine all content
     const content = fileContents.join('\n\n---\n\n')
 
-    // Display header
-    theme().header('YAR Present')
-    theme().info(`Output: ${fullOutputPath}`)
+    // Display info
+    console.log()
+    theme().info(`Creating presentation: ${fullOutputPath}`)
     if (message) {
       theme().info(`Instructions: ${message}`)
     }
-
     theme().divider()
 
     // Start spinner
