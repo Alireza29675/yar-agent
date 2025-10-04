@@ -1,14 +1,15 @@
 # YAR - Your AI Research Assistant
 
-A modern CLI tool powered by Claude Agent SDK for code analysis and understanding.
+An agentic CLI tool for analyzing and understanding codebases through AI-powered exploration, built on top of Claude Agent SDK.
 
 ## Features
 
-- 🔍 **Study Command**: Recursively analyze and understand codebases
-- 🎨 **Rich UI**: Beautiful terminal output with colors, spinners, tables, and boxes
-- 🤖 **AI-Powered**: Uses Claude Agent SDK for intelligent code analysis
-- 📊 **Tool Tracking**: Visual feedback showing what the AI is doing in real-time
-- 🎯 **Modern Stack**: Built with TypeScript, ESM, and latest CLI best practices
+- 🔍 **Study Command**: Analyze directory structure, architecture, and patterns
+- ⏳ **Timeline Command**: Trace Git history to understand codebase evolution
+- 🎨 **Clean UI**: Professional terminal output with minimal visual noise
+- 🤖 **AI-Powered**: Uses Claude Agent SDK for intelligent exploration
+- 📊 **Tool Tracking**: Real-time feedback showing AI operations
+- 🎯 **Modern Stack**: TypeScript, ESM, oclif 4
 
 ## Installation
 
@@ -36,89 +37,116 @@ For detailed documentation, see the [docs/](./docs/) directory:
 
 ## Commands
 
-### `yar study <directory>`
+### `yar study [directory]`
 
-Study a directory and understand how it works recursively. The AI agent will:
-- Explore the directory structure
-- Read and analyze key files
-- Understand dependencies and architecture
-- Provide comprehensive insights
+Analyze directory structure, architecture, patterns, and functionality. The AI agent will explore and understand:
+- Purpose and functionality
+- Structure and architecture
+- Dependencies and integrations
+- Patterns, conventions, and ways of working
+- Testing, security, observability
+- Documentation and onboarding
 
 **Examples:**
 ```bash
-# Study the current directory
-yar study .
+# Study current directory
+yar study -o analysis.md
 
-# Study a specific directory
-yar study ./src
+# Study specific directory
+yar study ./src -o analysis.md
 
-# Direct the agent's focus with a message
-yar study . -m "Focus on security vulnerabilities"
+# Focus the analysis
+yar study -m "Focus on security" -o security-analysis.md
 
-# Study with piped context
-git diff | yar study .
-
-# Save analysis to file
-yar study . -o analysis.md
-
-# Combine all features
-git diff | yar study . -m "Analyze breaking changes" -o report.md
+# Provide additional context via stdin
+git diff | yar study -o changes-analysis.md
+cat notes.txt | yar study ./api -o api-analysis.md
 ```
 
 **Features:**
-- Read-only operations (safe to run anywhere)
-- **Important messages**: Direct agent focus with `-m` flag
-- **Piped input support**: Provide context from other CLI commands
-- **Output to file**: Save analysis with `-o` flag
-- Visual feedback showing tool usage
-- Comprehensive analysis with structured output
-- Statistics and summaries
+- Defaults to current directory (`.`)
+- Read-only operations (safe to run)
+- Focus with `-m` flag
+- Context via stdin
+- Required `-o` flag for output file
+- Comprehensive structured analysis
 
-See [STUDY_COMMAND_FEATURES.md](./docs/STUDY_COMMAND_FEATURES.md) for detailed documentation.
+### `yar timeline [directory]`
 
-### `yar ui-demo`
+Trace Git history to understand how a directory evolved over time. The AI agent will:
+- Find when the directory was created and by whom
+- Identify key milestones and major changes
+- Track how patterns and approaches evolved
+- Highlight modern vs legacy practices
+- Extract notable commits and their impact
 
-Demonstrates the UI library capabilities including:
-- Colored messages (success, error, warning, info)
-- Tool usage displays with icons
-- Loading spinners
-- Data tables
-- Summary boxes
-- Tool statistics
+**Examples:**
+```bash
+# Analyze current directory timeline
+yar timeline -o timeline.md
 
-Run this command to see all available UI components!
+# Analyze specific directory
+yar timeline ./src -o src-evolution.md
 
-## UI Library
+# Focus on specific aspects
+yar timeline -m "Focus on architecture changes" -o arch-evolution.md
 
-YAR includes a comprehensive UI library for building beautiful CLI interfaces. All commands use this library to provide a consistent, modern user experience.
+# Provide context
+cat notes.txt | yar timeline ./packages/core -o core-timeline.md
+```
 
-**Key Features:**
-- 🎨 Rich colors with chalk
-- 🔄 Elegant spinners with ora
-- 📊 Beautiful tables with cli-table3
-- 📦 Boxed content with boxen
-- 🌈 Gradient text for headers
-- 🎯 Unicode icons with figures
-- 📈 Automatic tool usage tracking
+**Features:**
+- Defaults to current directory (`.`)
+- Git operations (read-only)
+- Focus with `-m` flag
+- Context via stdin
+- Required `-o` flag for output file
+- Chronological narrative of evolution
 
-See [UI_LIBRARY.md](./docs/UI_LIBRARY.md) for complete documentation and examples.
+## UI & Output
+
+YAR provides a clean, professional terminal interface with:
+- Minimal visual noise
+- Real-time tool usage feedback
+- Progress indicators
+- Summary statistics
+- Structured markdown output files
+
+All analysis is written to files (required `-o` flag) while providing live feedback in the terminal.
 
 ## Architecture
 
 ```
 yar/
 ├── src/
-│   ├── commands/          # CLI commands
-│   │   ├── study.ts       # Study command
-│   │   └── ui-demo.ts     # UI demo command
+│   ├── commands/          # CLI commands (thin layer)
+│   │   ├── study.ts
+│   │   └── timeline.ts
+│   ├── tasks/             # Business logic orchestration
+│   │   ├── study.ts
+│   │   └── timeline.ts
+│   ├── services/          # Core services
+│   │   ├── agent.ts       # AI agent execution
+│   │   └── prompt-builder.ts
+│   ├── prompts/           # All prompts as Markdown
+│   │   ├── system/        # Base system prompt
+│   │   └── tasks/         # Task-specific prompts
+│   ├── config/            # Configuration
+│   │   └── tools.ts       # Available tools
 │   ├── lib/               # Shared libraries
-│   │   ├── ui.ts          # Rich UI library
-│   │   └── ui-example.ts  # Usage examples
-│   └── index.ts           # Entry point
+│   │   └── theme/         # UI theme system
+│   └── utils/             # Utilities
 ├── bin/                   # Executables
 ├── dist/                  # Compiled output
 └── docs/                  # Documentation
 ```
+
+YAR follows a layered architecture:
+1. **Commands**: Parse CLI args and delegate to tasks
+2. **Tasks**: Orchestrate services to accomplish goals
+3. **Services**: Reusable business logic (agent, prompts)
+4. **Prompts**: All prompts stored as Markdown files
+5. **Theme**: Consistent UI rendering
 
 ## Development
 
@@ -155,43 +183,22 @@ Tests have been removed in favor of evaluations. Evals will be added in the futu
 
 ## How It Works
 
-YAR uses the Claude Agent SDK to create AI agents that can:
+YAR uses the Claude Agent SDK with a base system prompt that defines its behavior:
+- Curious, thorough, and critical thinking
+- Pragmatic engineer and product thinker mindset
+- Seeks deep understanding before drawing conclusions
 
-1. **Read & Search**: Use tools like Read, Grep, Glob, and ListDir
-2. **Analyze**: Claude's advanced reasoning understands code structure
-3. **Explain**: Provides clear, comprehensive insights
-4. **Track**: Visual feedback shows all operations in real-time
+**Agent Capabilities:**
+1. **Read & Search**: Read, Grep, Glob, ListDir tools
+2. **Git Operations**: Bash tool for Git history (timeline only)
+3. **Analyze**: Claude's reasoning understands structure and patterns
+4. **Explain**: Clear, comprehensive markdown output
 
-The study command gives the AI agent permission to explore directories and files, but restricts it to read-only operations for safety.
+All operations are read-only for safety.
 
 ## Creating New Commands
 
-To create a new command that uses the rich UI:
-
-```typescript
-import {Args, Command} from '@oclif/core'
-import {query} from '@anthropic-ai/claude-agent-sdk'
-import {ui} from '../lib/ui.js'
-
-export default class MyCommand extends Command {
-  static args = {
-    input: Args.string({required: true}),
-  }
-
-  async run(): Promise<void> {
-    const {args} = await this.parse(MyCommand)
-    
-    ui.header('🚀 My Command')
-    ui.info(`Processing: ${args.input}`)
-    
-    // Your command logic here
-    
-    ui.success('Complete!')
-  }
-}
-```
-
-See [UI_LIBRARY.md](./docs/UI_LIBRARY.md) for full documentation.
+See [CREATING_COMMANDS.md](./docs/CREATING_COMMANDS.md) for a comprehensive guide on creating new commands and tasks.
 
 ## Contributing
 
