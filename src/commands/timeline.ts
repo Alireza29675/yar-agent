@@ -1,5 +1,6 @@
 import {Args, Command, Flags} from '@oclif/core'
 import * as fs from 'node:fs/promises'
+import {resolve} from 'node:path'
 
 import {theme} from '../lib/theme/index.js'
 import {timelineTask} from '../tasks/timeline.js'
@@ -8,8 +9,9 @@ import {readStdin} from '../utils/stdin.js'
 export default class Timeline extends Command {
   static args = {
     directory: Args.string({
+      default: '.',
       description: 'Directory to analyze timeline',
-      required: true,
+      required: false,
     }),
   }
   static description = 'Analyze the evolution of a directory over time using Git history'
@@ -38,6 +40,9 @@ export default class Timeline extends Command {
     const {directory} = args
     const {message, output} = flags
 
+    // Resolve full path
+    const fullPath = resolve(directory)
+
     // Check for piped input
     const stdinInput = await readStdin()
 
@@ -46,10 +51,11 @@ export default class Timeline extends Command {
 
     // Display header
     theme().header('YAR Timeline')
-    theme().info(`Analyzing: ${directory}`)
+    theme().info(`Analyzing: ${fullPath}`)
     if (message) {
       theme().info(`Focus: ${message}`)
     }
+
     theme().divider()
 
     // Run the timeline task
@@ -67,9 +73,9 @@ export default class Timeline extends Command {
     theme().divider()
 
     theme().summaryBox('Complete', {
-      'Output': output,
       'Duration': `${result.duration}s`,
       'Messages': result.messageCount,
+      'Output': output,
       'Tools': result.totalToolUseCount,
     })
 

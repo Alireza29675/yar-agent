@@ -1,5 +1,6 @@
 import {Args, Command, Flags} from '@oclif/core'
 import * as fs from 'node:fs/promises'
+import {resolve} from 'node:path'
 
 import {theme} from '../lib/theme/index.js'
 import {studyTask} from '../tasks/study.js'
@@ -8,8 +9,9 @@ import {readStdin} from '../utils/stdin.js'
 export default class Study extends Command {
   static args = {
     directory: Args.string({
+      default: '.',
       description: 'Directory to study recursively',
-      required: true,
+      required: false,
     }),
   }
   static description = 'Study a directory and understand how it works recursively'
@@ -41,6 +43,9 @@ export default class Study extends Command {
     const {directory} = args
     const {message, output} = flags
 
+    // Resolve full path
+    const fullPath = resolve(directory)
+
     // Check for piped input
     const stdinInput = await readStdin()
 
@@ -49,7 +54,7 @@ export default class Study extends Command {
 
     // Display header
     theme().header('YAR Study')
-    theme().info(`Analyzing: ${directory}`)
+    theme().info(`Analyzing: ${fullPath}`)
     if (message) {
       theme().info(`Focus: ${message}`)
     }

@@ -46,18 +46,16 @@ Trace the history of this directory by examining Git commits that affected it. F
 
 #### [Time Period] - [Description]
 - **What changed**: Brief description
-- **Why**: Context or reason for the change
+- **Why**: Context or reason for the change (only talk about what you are sure about. could make guess but specify that it's a guess)
 - **Impact**: How this shaped the directory
 
 [Repeat for each major phase or milestone]
 
 ### Patterns & Approaches
 
-#### Current Approaches
+#### Current Approaches vs Legacy Approaches
 [Modern patterns, conventions, and ways of working in this directory]
-
-#### Legacy Approaches
-[Older patterns that have been replaced or deprecated, with context on why they changed]
+[vs Older patterns that have been replaced or deprecated, with context on why they changed]
 
 ### Notable Files & Components
 [Key files and their roles in the directory's evolution]
