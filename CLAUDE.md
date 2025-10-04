@@ -296,3 +296,4 @@ Commands can operate in two modes:
 - keep the docs up to date.
 - do pnpm build after each change. after meaningful changes which you are certain is going to stay, do a commit.
 - commit messages should be short but relevant. follow angular convention for commit messages
+- always keep the README.md up-to-date
