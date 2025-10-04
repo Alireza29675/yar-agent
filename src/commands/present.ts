@@ -87,12 +87,18 @@ export default class Present extends Command {
 
     theme().divider()
 
+    // Start spinner
+    theme().startSpinner('Creating slides...')
+
     // Run the present task (showUI: false to avoid logging HTML)
     const result = await presentTask({
       content,
       message: message || undefined,
       showUI: false,
     })
+
+    // Stop spinner
+    theme().stopSpinner()
 
     // Create output directory if it doesn't exist
     const outputDir = dirname(fullOutputPath)
