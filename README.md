@@ -214,3 +214,7 @@ MIT
 ## Author
 
 Alireza Sheikholmolouki
+
+## Why YAR?
+
+In Farsi, my mother language, YAR (یار) means companion.
