@@ -1,12 +1,13 @@
 {
-  "name": "yar",
-  "description": "A new CLI generated with oclif",
-  "version": "0.0.0",
+  "name": "yar-cli",
+  "description": "Your AI Research Assistant - An agentic CLI tool for analyzing and understanding codebases",
+  "version": "0.1.0",
   "author": "Alireza Sheikholmolouki",
   "bin": {
     "yar": "./bin/run.js"
   },
-  "bugs": "https://github.com/dev/yar/issues",
+  "bugs": "https://github.com/Alireza29675/yar/issues",
+  "preferGlobal": true,
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.1.5",
     "@anthropic-ai/sdk": "^0.65.0",
@@ -23,6 +24,7 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.7",
     "@eslint/compat": "^1",
     "@oclif/prettier-config": "^0.2.1",
     "@types/gradient-string": "^1.1.6",
@@ -44,9 +46,17 @@
     "./src/prompts",
     "./oclif.manifest.json"
   ],
-  "homepage": "https://github.com/dev/yar",
+  "homepage": "https://github.com/Alireza29675/yar",
   "keywords": [
-    "oclif"
+    "cli",
+    "ai",
+    "claude",
+    "code-analysis",
+    "codebase",
+    "documentation",
+    "git-history",
+    "presentation",
+    "developer-tools"
   ],
   "license": "MIT",
   "main": "dist/index.js",
@@ -61,12 +71,13 @@
     ],
     "topicSeparator": " "
   },
-  "repository": "dev/yar",
+  "repository": "Alireza29675/yar",
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && shx cp -r src/prompts dist/prompts",
     "lint": "eslint",
     "postpack": "shx rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
+    "release": "pnpm run build && changeset publish",
     "version": "oclif readme && git add README.md"
   },
   "types": "dist/index.d.ts"
