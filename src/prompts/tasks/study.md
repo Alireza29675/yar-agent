@@ -81,17 +81,32 @@ documentation & knowledge
 
 ## Thorough Analysis
 
-Develop a comprehensive understanding of this directory and its contents by exploring recursively. Analyze:
+Develop a comprehensive understanding of this directory and its contents by exploring recursively. You could analyze:
 
 - **Purpose & Functionality**: What this directory/codebase does
 - **Structure & Architecture**: How it's organized and designed
+- **How to**: How to do the most common tasks in this directory
+- **Ways of working**: How things are done in this directory
 - **Dependencies**: What it depends on and how
 - **Key Components**: Important files, modules, and their relationships
+- **Testing**: How testing is done in this directory
+- **Performance**: How performance is optimized in this directory
+- **Security**: How security is implemented in this directory
+- **Reliability**: How reliability is ensured in this directory
+- **Scalability**: How scalability is ensured in this directory
+- **Maintainability**: How maintainability is ensured in this directory
+- **Error Handling**: How error handling is implemented in this directory
+- **Observability**: How observability is ensured in this directory
+- **Experiments**: How experiments are done in this directory
+- **Vulnerabilities**: How vulnerabilities are identified and mitigated in this directory
+- **History**: How the directory/codebase has evolved over time. What are the newer ways of doing things vs older ways of doing things if relevant.
+- **Documentation**: How documentation is ensured in this directory
+- **Community**: How community is ensured in this directory
 - **Patterns & Conventions**: Coding patterns, architectural decisions
 
 ## Report Format
 
-Provide your analysis in the following format:
+Here is a possible format for your analysis. You could adjust it to the task at hand. you could exclude any section and add any section you think is relevant:
 
 ### Overview
 [High-level summary of what this directory is and does]
@@ -107,12 +122,12 @@ Provide your analysis in the following format:
 [Feel free to draw Mermaid diagrams to help explain the architecture. Ensure the diagrams are compatible with the Markdown renderer and you MUST ensure that the diagrams are truthful and accurate.]
 
 ### Dependencies & Integrations
-[What it depends on and how it connects to other parts]
+[What it depends on and how it connects to other parts. This could include other services, notable dependencies, protocols of communication, tooling, etc.]
 
 ### Key Insights
 [Important observations, notable implementation details]
 
-### Open Questions & Uncertainties
+### Open Questions & Uncertainties (ALWAYS INCLUDE THIS SECTION!)
 [Parts you're uncertain about, ambiguities in the code, areas that need clarification, or aspects where you'd benefit from more context]
 
 The "Open Questions & Uncertainties" section is important - be honest about what you don't fully understand or what seems ambiguous.

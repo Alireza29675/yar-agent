@@ -5,11 +5,10 @@
  * and tracking execution statistics.
  */
 
+import {query} from '@anthropic-ai/claude-agent-sdk'
 import {readFile} from 'node:fs/promises'
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
-
-import {query} from '@anthropic-ai/claude-agent-sdk'
 
 import type {AvailableTool} from '../config/tools.js'
 
@@ -20,13 +19,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 /**
  * Load and cache the base system prompt
  */
-let baseSystemPrompt: string | null = null
+let baseSystemPrompt: null | string = null
 
 async function getBaseSystemPrompt(): Promise<string> {
   if (!baseSystemPrompt) {
     const promptPath = join(__dirname, '..', 'prompts', 'system', 'app_introduction.md')
     baseSystemPrompt = await readFile(promptPath, 'utf8')
   }
+
   return baseSystemPrompt
 }
 
