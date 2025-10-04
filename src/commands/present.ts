@@ -78,9 +78,6 @@ export default class Present extends Command {
     // Combine all content
     const content = fileContents.join('\n\n---\n\n')
 
-    // Always show UI
-    const showUI = true
-
     // Display header
     theme().header('YAR Present')
     theme().info(`Output: ${fullOutputPath}`)
@@ -90,11 +87,11 @@ export default class Present extends Command {
 
     theme().divider()
 
-    // Run the present task
+    // Run the present task (showUI: false to avoid logging HTML)
     const result = await presentTask({
       content,
       message: message || undefined,
-      showUI,
+      showUI: false,
     })
 
     // Create output directory if it doesn't exist
