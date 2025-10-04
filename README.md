@@ -17,7 +17,7 @@ yar --version
 
 ```bash
 # cd to the complex codebase you want to onboard on, then:
-yarn study . -o REPORT.md && yarn present -o slides.html -f REPORT.md --serve
+yar study . -o REPORT.md && yar present -o slides.html -f REPORT.md --serve
 
 # this will take a few minutes to complete, but after magic happens, the presentation will be served on your browser and VALA! ✨
 ```
