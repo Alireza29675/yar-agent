@@ -1,5 +1,16 @@
 # yar-cli
 
+## 0.1.1
+
+### Patch Changes
+
+- e05274d: Improve README with quick start guide and better examples
+
+  - Add quick start section showing complete workflow
+  - Improve command examples and descriptions
+  - Add detailed CI/CD integration guide with update flag usage
+  - Better explain the purpose of each command
+
 ## 0.1.0
 
 ### Minor Changes
