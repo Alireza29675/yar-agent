@@ -1,8 +1,10 @@
+# DISABLED: Release pipeline temporarily disabled
 name: publish
 
 on:
   release:
-    types: [released]
+    types: []
+#    types: [released]
 
 jobs:
   publish:

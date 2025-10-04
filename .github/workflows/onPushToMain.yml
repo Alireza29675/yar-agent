@@ -1,9 +1,11 @@
 # test
+# DISABLED: Release pipeline temporarily disabled
 name: version, tag and github release
 
 on:
   push:
-    branches: [main]
+    branches: []
+#    branches: [main]
 
 jobs:
   release:

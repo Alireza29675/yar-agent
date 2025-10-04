@@ -32,7 +32,7 @@ export default class Study extends Command {
     output: Flags.string({
       char: 'o',
       description: 'Output file path to write the analysis to',
-      required: false,
+      required: true,
     }),
   }
 
