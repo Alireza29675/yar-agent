@@ -76,15 +76,13 @@ export interface AgentExecutionResult {
 function formatContext(contextItems: ContextItem[]): string {
   if (contextItems.length === 0) return ''
 
-  const sections = contextItems.map(item => {
-    return `## ${item.title}
+  const sections = contextItems.map(item => `## ${item.title}
 
 ${item.description}
 
 \`\`\`
 ${item.content}
-\`\`\``
-  })
+\`\`\``)
 
   return `# Additional Context
 
