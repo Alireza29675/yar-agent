@@ -44,24 +44,22 @@ export default class Study extends Command {
     // Check for piped input
     const stdinInput = await readStdin()
 
-    // Suppress visual UI if writing to file
-    const showUI = !output
+    // Always show UI
+    const showUI = true
 
-    if (showUI) {
-      // Display header
-      theme().header('🔍 YAR Study Agent')
-      theme().info(`Analyzing directory: ${directory}`)
+    // Display header
+    theme().header('🔍 YAR Study Agent')
+    theme().info(`Analyzing directory: ${directory}`)
 
-      if (stdinInput) {
-        theme().info(`Piped input received: ${stdinInput.length} characters`)
-      }
-
-      if (message) {
-        theme().warning(`User message: ${message}`)
-      }
-
-      theme().divider()
+    if (stdinInput) {
+      theme().info(`Piped input received: ${stdinInput.length} characters`)
     }
+
+    if (message) {
+      theme().warning(`User message: ${message}`)
+    }
+
+    theme().divider()
 
     // Run the study task
     const result = await studyTask({
@@ -71,25 +69,22 @@ export default class Study extends Command {
       showUI,
     })
 
-    // Write to file if output flag is provided
-    if (output) {
-      await fs.writeFile(output, result.analysis, 'utf8')
-      theme().success(`Analysis written to: ${output}`)
-      theme().info(`Duration: ${result.duration}s | Messages: ${result.messageCount} | Tools Used: ${result.totalToolUseCount}`)
-    } else {
-      // Display completion summary
-      theme().divider()
-      
-      theme().summaryBox('Study Complete', {
-        'Directory': directory,
-        'Duration': `${result.duration}s`,
-        'Messages': result.messageCount,
-        'Tools Used': result.totalToolUseCount,
-      })
+    // Write to file
+    await fs.writeFile(output, result.analysis, 'utf8')
 
-      theme().displayToolStats(result.toolUseCounts)
-      
-      theme().success('Study completed successfully!')
-    }
+    // Display completion summary
+    theme().divider()
+
+    theme().summaryBox('Study Complete', {
+      'Directory': directory,
+      'Output File': output,
+      'Duration': `${result.duration}s`,
+      'Messages': result.messageCount,
+      'Tools Used': result.totalToolUseCount,
+    })
+
+    theme().displayToolStats(result.toolUseCounts)
+
+    theme().success('Study completed successfully!')
   }
 }
