@@ -76,7 +76,7 @@ export class DefaultTheme implements Theme {
    * Display a divider
    */
   divider(): void {
-    console.log(this.colors.dim('─'.repeat(process.stdout.columns || 80)))
+    console.log()
   }
 
   /**
@@ -107,20 +107,15 @@ export class DefaultTheme implements Theme {
    * Display a header with gradient styling
    */
   header(text: string): void {
-    const gradientText = gradient(['#00f5ff', '#00a1ff'])(text)
-    console.log('\n' + boxen(gradientText, {
-      borderColor: 'cyan',
-      borderStyle: 'round',
-      margin: 1,
-      padding: 1,
-    }))
+    console.log('\n' + this.colors.bold.cyan(text))
+    console.log(this.colors.dim('─'.repeat(Math.min(text.length, 50))))
   }
 
   /**
    * Display info message
    */
   info(message: string): void {
-    console.log(this.colors.info(`${figures.info} ${message}`))
+    console.log(this.colors.dim(`  ${message}`))
   }
 
 
@@ -128,7 +123,7 @@ export class DefaultTheme implements Theme {
    * Display a section header
    */
   section(text: string): void {
-    console.log('\n' + this.colors.bold.cyan(`${figures.arrowRight} ${text}`))
+    console.log('\n' + this.colors.dim(text))
   }
 
   /**
@@ -168,17 +163,11 @@ export class DefaultTheme implements Theme {
    * Display a summary box
    */
   summaryBox(title: string, items: Record<string, number | string>): void {
-    let content = this.colors.bold(title) + '\n\n'
+    console.log(this.colors.bold.green(`\n${figures.tick} ${title}`))
     for (const [key, value] of Object.entries(items)) {
-      content += `${this.colors.dim(key + ':')} ${this.colors.highlight(String(value))}\n`
+      console.log(`  ${this.colors.dim(key + ':')} ${String(value)}`)
     }
-
-    console.log('\n' + boxen(content.trim(), {
-      borderColor: 'yellow',
-      borderStyle: 'round',
-      margin: {bottom: 1, left: 2, right: 2, top: 1},
-      padding: 1,
-    }))
+    console.log()
   }
 
   /**
@@ -219,20 +208,8 @@ export class DefaultTheme implements Theme {
    * Display tool usage with icon and colored name
    */
   toolUse(toolName: string, input?: Record<string, unknown>): void {
-    const toolIcons: Record<string, string> = {
-      Bash: '💻',
-      Glob: '📁',
-      Grep: '🔍',
-      ListDir: '📂',
-      Read: '📖',
-      Write: '✍️',
-    }
-
-    const icon = toolIcons[toolName] || '🔧'
-    console.log(
-      this.colors.tool(`${icon} ${toolName}`) +
-      (input ? this.colors.dim(` ${this.formatToolInput(toolName, input)}`) : '')
-    )
+    const formattedInput = input ? this.formatToolInput(toolName, input) : ''
+    console.log(this.colors.dim(`  ${toolName}${formattedInput ? ': ' + formattedInput : ''}`))
   }
 
   /**
@@ -264,7 +241,7 @@ export class DefaultTheme implements Theme {
           // Truncate long commands
           const maxLength = 60
           const cmd = command.length > maxLength ? command.slice(0, maxLength) + '...' : command
-          return `→ ${cmd}`
+          return cmd
         }
         return ''
       }
@@ -272,24 +249,24 @@ export class DefaultTheme implements Theme {
       case 'Glob': {
         const {glob_pattern: globPattern1, globPattern: globPattern2, pattern} = input
         const resolvedPattern = pattern || globPattern1 || globPattern2
-        return `→ ${resolvedPattern as string || ''}`
+        return resolvedPattern as string || ''
       }
 
       case 'Grep': {
         const {path, pattern} = input
-        return `→ "${pattern as string || ''}"${path ? ` in ${path as string}` : ''}`
+        return `"${pattern as string || ''}"${path ? ` in ${path as string}` : ''}`
       }
 
       case 'ListDir': {
         const {path, target_directory: targetDir1, targetDirectory: targetDir2} = input
         const dir = path || targetDir1 || targetDir2
-        return `→ ${dir as string || ''}`
+        return dir as string || ''
       }
 
       case 'Read': {
         const {file_path: filePath1, filePath: filePath2, path} = input
         const resolvedPath = path || filePath1 || filePath2
-        return `→ ${resolvedPath as string || ''}`
+        return resolvedPath as string || ''
       }
 
       default: {

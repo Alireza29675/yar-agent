@@ -48,17 +48,11 @@ export default class Study extends Command {
     const showUI = true
 
     // Display header
-    theme().header('🔍 YAR Study Agent')
-    theme().info(`Analyzing directory: ${directory}`)
-
-    if (stdinInput) {
-      theme().info(`Piped input received: ${stdinInput.length} characters`)
-    }
-
+    theme().header('YAR Study')
+    theme().info(`Analyzing: ${directory}`)
     if (message) {
-      theme().warning(`User message: ${message}`)
+      theme().info(`Focus: ${message}`)
     }
-
     theme().divider()
 
     // Run the study task
@@ -75,16 +69,13 @@ export default class Study extends Command {
     // Display completion summary
     theme().divider()
 
-    theme().summaryBox('Study Complete', {
-      'Directory': directory,
-      'Output File': output,
+    theme().summaryBox('Complete', {
+      'Output': output,
       'Duration': `${result.duration}s`,
       'Messages': result.messageCount,
-      'Tools Used': result.totalToolUseCount,
+      'Tools': result.totalToolUseCount,
     })
 
     theme().displayToolStats(result.toolUseCounts)
-
-    theme().success('Study completed successfully!')
   }
 }
