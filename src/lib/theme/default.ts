@@ -17,13 +17,14 @@ export class DefaultTheme implements Theme {
   // Color schemes
   private colors = {
     bold: chalk.bold,
-    dim: chalk.dim,
-    error: chalk.red,
-    highlight: chalk.magenta,
-    info: chalk.cyan,
-    success: chalk.green,
-    tool: chalk.blue,
-    warning: chalk.yellow,
+    dim: chalk.gray,
+    error: chalk.red.bold,
+    highlight: chalk.magentaBright,
+    info: chalk.blueBright,
+    primary: chalk.cyanBright,
+    success: chalk.greenBright,
+    tool: chalk.yellow,
+    warning: chalk.yellowBright,
   }
   private spinner: null | Ora = null
 
@@ -61,14 +62,23 @@ export class DefaultTheme implements Theme {
   displayToolStats(toolUseCounts: Record<string, number>): void {
     if (Object.keys(toolUseCounts).length === 0) return
 
+    const toolIcons: Record<string, string> = {
+      Bash: '⚡',
+      Glob: '🔍',
+      Grep: '🔎',
+      ListDir: '📂',
+      Read: '📄',
+      Write: '✏️',
+    }
+
     const rows = Object.entries(toolUseCounts)
       .sort((a, b) => b[1] - a[1])
       .map(([tool, count]) => [
-        this.colors.tool(tool),
+        `${toolIcons[tool] || '🔧'} ${this.colors.tool(tool)}`,
         this.colors.highlight(count.toString()),
       ])
 
-    console.log('\n' + this.colors.bold.cyan('Tool Usage Statistics:'))
+    console.log('\n' + this.colors.primary('📊 ') + this.colors.bold('Tool Usage'))
     this.table(['Tool', 'Count'], rows)
   }
 
@@ -107,15 +117,17 @@ export class DefaultTheme implements Theme {
    * Display a header with gradient styling
    */
   header(text: string): void {
-    console.log('\n' + this.colors.bold.cyan(text))
-    console.log(this.colors.dim('─'.repeat(Math.min(text.length, 50))))
+    const gradient = require('gradient-string')
+    const gradientText = gradient.pastel.multiline(text)
+    console.log('\n' + this.colors.bold(gradientText))
+    console.log(this.colors.dim('─'.repeat(Math.min(text.length, 50))) + '\n')
   }
 
   /**
    * Display info message
    */
   info(message: string): void {
-    console.log(this.colors.dim(`  ${message}`))
+    console.log(`  ${this.colors.info('→')} ${this.colors.dim(message)}`)
   }
 
 
@@ -123,7 +135,7 @@ export class DefaultTheme implements Theme {
    * Display a section header
    */
   section(text: string): void {
-    console.log('\n' + this.colors.dim(text))
+    console.log(`\n${this.colors.primary('▸')} ${this.colors.bold(text)}`)
   }
 
   /**
@@ -131,9 +143,9 @@ export class DefaultTheme implements Theme {
    */
   startSpinner(text: string): void {
     this.spinner = ora({
-      color: 'cyan',
-      spinner: 'dots',
-      text,
+      color: 'magenta',
+      spinner: 'dots12',
+      text: this.colors.primary(text),
     }).start()
   }
 
@@ -163,9 +175,9 @@ export class DefaultTheme implements Theme {
    * Display a summary box
    */
   summaryBox(title: string, items: Record<string, number | string>): void {
-    console.log(this.colors.bold.green(`\n${figures.tick} ${title}`))
+    console.log(this.colors.success(`\n✨ ${this.colors.bold(title)}`))
     for (const [key, value] of Object.entries(items)) {
-      console.log(`  ${this.colors.dim(key + ':')} ${String(value)}`)
+      console.log(`  ${this.colors.primary('•')} ${this.colors.dim(key + ':')} ${this.colors.highlight(String(value))}`)
     }
     console.log()
   }
@@ -208,8 +220,18 @@ export class DefaultTheme implements Theme {
    * Display tool usage with icon and colored name
    */
   toolUse(toolName: string, input?: Record<string, unknown>): void {
+    const toolIcons: Record<string, string> = {
+      Bash: '⚡',
+      Glob: '🔍',
+      Grep: '🔎',
+      ListDir: '📂',
+      Read: '📄',
+      Write: '✏️',
+    }
+
+    const icon = toolIcons[toolName] || '🔧'
     const formattedInput = input ? this.formatToolInput(toolName, input) : ''
-    console.log(this.colors.dim(`  ${toolName}${formattedInput ? ': ' + formattedInput : ''}`))
+    console.log(`  ${icon} ${this.colors.tool(toolName)}${formattedInput ? this.colors.dim(': ' + formattedInput) : ''}`)
   }
 
   /**
