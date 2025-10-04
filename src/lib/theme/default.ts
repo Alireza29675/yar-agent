@@ -117,7 +117,6 @@ export class DefaultTheme implements Theme {
    * Display a header with gradient styling
    */
   header(text: string): void {
-    const gradient = require('gradient-string')
     const gradientText = gradient.pastel.multiline(text)
     console.log('\n' + this.colors.bold(gradientText))
     console.log(this.colors.dim('─'.repeat(Math.min(text.length, 50))) + '\n')
