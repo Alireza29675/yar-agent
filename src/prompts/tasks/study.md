@@ -1,6 +1,19 @@
 Study the directory at path: {{directory}}
 
-Your goal is to provide a thorough understanding of this directory and its contents. This will be used to help the user understand the codebase and make decisions about how to contribute to it. This task is about understanding the current state and ways of working.
+Your goal is to create an **effective onboarding guide** for this codebase. Help developers get productive quickly by providing comprehensive yet distilled information that's hard to discover by just reading the code.
+
+**Focus on:**
+- What developers need to know to get started and be productive
+- Information that's not obvious from reading code (context, conventions, gotchas)
+- Highlights and key insights that accelerate understanding
+- Entry points and common workflows
+- The "unwritten rules" and implicit knowledge
+
+**Avoid:**
+- Exhaustive documentation of every detail
+- Information that's easily discoverable in the code itself
+- Repeating what's already in README or official docs (reference them instead)
+- Over-explaining simple, self-documenting code
 
 **IMPORTANT - Output File**:
 - You MUST write your analysis to the output file at: {{outputFile}}
@@ -12,107 +25,64 @@ Your goal is to provide a thorough understanding of this directory and its conte
 
 **IMPORTANT - Date**: Include the current date at the very beginning of your analysis output. This analysis is time-sensitive and the date provides crucial context for when this snapshot was taken.
 
-## Areas you can study
+## Key Areas for Onboarding
 
-repo boot & anatomy
-- entry points, packages, build/run cmds, env vars, secrets
-- README/CONTRIBUTING, Makefile|Taskfile, devcontainer/Nix, etc
-- golden-path scripts (make bootstrap && make dev) (one-command setup)
+Investigate these areas based on what's relevant to this codebase. Not all will apply - focus on what matters most for getting developers productive:
 
-architecture & boundaries
-- services, sync/async flows, contracts (OpenAPI/GraphQL/proto)
-- feature flags, event buses, idempotency (safe to retry)
-- “blast radius” (scope of impact) for each service
+**Getting Started (Critical)**
+- Entry points: Where does execution begin? Main files, commands, scripts
+- Setup: Build/run commands, environment variables, required dependencies
+- Quick wins: Simplest way to see something working (golden path)
+- Common gotchas: Non-obvious setup issues or environment quirks
 
-data model & migrations
-- primary DBs, schemas, migrations & rollback strategy
-- seeds/backfills, PII handling, retention policies
-- consistency model & indexing hotspots
+**Architecture & Code Organization (High Priority)**
+- Directory structure: What goes where and why (especially non-obvious patterns)
+- Key abstractions: Core concepts, models, services that everything builds on
+- Data flow: How information moves through the system
+- Extension points: Where/how to add new features
+- Conventions: Naming patterns, file organization, code style
 
-dependencies & integrations
-- internal libs, 3rd-party SDKs, SaaS (S3, Stripe, Sentry, etc.)
-- version pinning, upgrade cadence, license posture
-- “single source of truth” (authoritative reference)
+**Development Workflow (Important)**
+- Local development: How to iterate quickly (hot reload, watch mode, etc.)
+- Testing: How to run tests, write new ones, key testing patterns
+- Common tasks: Adding features, fixing bugs, migrations, etc.
+- Build/deploy: How changes get from local to production
+- Debugging: Tools, techniques, common issues
 
-CI/CD & release train
-- pipelines, required checks, artifact storage
-- environments & promotion flow, hotfix path
-- release notes, tagging, canary/blue-green
+**Context & History (Valuable)**
+- Why things are the way they are (architectural decisions)
+- Modern vs legacy patterns (what to emulate, what to avoid)
+- Recent changes: What's new or actively evolving
+- Known issues: Technical debt, limitations, planned improvements
 
-code quality bar
-- linters/formatters, coverage targets, PR template
-- CODEOWNERS, commit conventions, change size limits
-- flaky test policy and quarantine list (temporary isolation)
+**Integration Points (If Relevant)**
+- Key dependencies: What they do, why they matter, how they're used
+- External services: APIs, databases, third-party integrations
+- Configuration: How settings work, where they live, how to change them
 
-observability & ops
-- logs, metrics, traces (Otel), dashboards & SLOs
-- alert routes, on-call rota, runbooks
-- last 3 post-mortems + learnings (institutional memory)
+**Team & Workflow (If Relevant)**
+- Contribution process: How to get code reviewed and merged
+- Code quality expectations: Linters, formatters, review practices
+- Communication: Where to ask questions, who knows what
 
-security & compliance
-- authn/z model, RBAC/scopes, secrets management (Vault/KMS)
-- threat model, deps scanning, SBOM
-- GDPR/DPA touchpoints, data access reviews
+**Only If Applicable:**
+- Security model, authentication, authorization approaches
+- Performance characteristics, optimization strategies
+- Monitoring, logging, debugging in production
+- Database schemas, migrations, data patterns
 
-ways of working
-- branching model (trunk vs GitFlow), review SLAs, merge rules
-- ADR/RFC process, issue labels & workflow
-- definition of done, estimation norms
+## Analysis Approach
 
-product context
-- core user journeys, KPIs, experiment registry
-- roadmap, active feature flags, deprecation schedule
-- error budgets (allowed unreliability window)
+Explore the codebase to understand what new developers need to know. Focus on:
 
-risk map
-- brittle modules, perf hotspots, operational “papercuts”
-- TODO/FIXME clusters, ownerless code
-- areas with high coupling (tight interdependence)
+1. **Start with entry points**: Find where execution begins and trace key flows
+2. **Identify core patterns**: Look for repeated architectural patterns and conventions
+3. **Understand the "why"**: Don't just document what code does - explain why it's structured this way
+4. **Find the implicit knowledge**: Uncover conventions, gotchas, and context that isn't in the code
+5. **Prioritize actionable information**: What helps someone make their first contribution?
+6. **Be selective**: Include what accelerates understanding, skip what's obvious from code
 
-people & comms (team, company, etc)
-- domain owners, escalation paths, key Slack channels
-- on-call rotations, incident commanders
-- stakeholder map (who cares + why)
-
-local dev ergonomics
-- dev env parity vs mocks, seed data, fixture packs
-- hot reload, test watch, e2e harness
-- container vs bare-metal tradeoffs
-
-infra as code
-- Terraform/Helm/Kustomize layout, namespaces, quotas
-- secrets wiring, config drift detection
-- rollback & disaster recovery playbooks (step-by-step actions)
-
-documentation & knowledge
-- docs/ADR index, glossary of domain terms
-- onboarding guide, service catalog entries
-- decision logs with “why now / alternatives rejected” (rationale trail)
-
-## Thorough Analysis
-
-Develop a comprehensive understanding of this directory and its contents by exploring recursively. You could analyze:
-
-- **Purpose & Functionality**: What this directory/codebase does
-- **Structure & Architecture**: How it's organized and designed
-- **How to**: How to do the most common tasks in this directory
-- **Ways of working**: How things are done in this directory
-- **Dependencies**: What it depends on and how
-- **Key Components**: Important files, modules, and their relationships
-- **Testing**: How testing is done in this directory
-- **Performance**: How performance is optimized in this directory
-- **Security**: How security is implemented in this directory
-- **Reliability**: How reliability is ensured in this directory
-- **Scalability**: How scalability is ensured in this directory
-- **Maintainability**: How maintainability is ensured in this directory
-- **Error Handling**: How error handling is implemented in this directory
-- **Observability**: How observability is ensured in this directory
-- **Experiments**: How experiments are done in this directory
-- **Vulnerabilities**: How vulnerabilities are identified and mitigated in this directory
-- **History**: How the directory/codebase has evolved over time. What are the newer ways of doing things vs older ways of doing things if relevant.
-- **Documentation**: How documentation is ensured in this directory
-- **Community**: How community is ensured in this directory
-- **Patterns & Conventions**: Coding patterns, architectural decisions
+**Balance depth with clarity**: Comprehensive enough to be useful, distilled enough to be digestible.
 
 ## Report Format
 
