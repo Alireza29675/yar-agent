@@ -28,6 +28,17 @@ Create a reveal.js presentation that teaches the provided content effectively.
 - Make it visually distinct and premium feeling
 - Ensure excellent readability
 
+**Reveal.js Configuration:**
+Use these settings in `Reveal.initialize()` for optimal display:
+```javascript
+width: 1280,
+height: 800,
+margin: 0.04,
+maxScale: 0.8,
+center: false
+```
+These dimensions prevent scaling issues and ensure the presentation displays correctly on various screen sizes. The `maxScale: 0.8` prevents reveal.js from scaling content too large.
+
 **Slide Architecture - Use Vertical Slides Extensively:**
 - Horizontal slides (`<section>`) = Major topics/chapters
 - Vertical slides (nested `<section>`) = Sub-points, details, examples within that topic
