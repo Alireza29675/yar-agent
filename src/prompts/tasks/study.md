@@ -84,30 +84,54 @@ Explore the codebase to understand what new developers need to know. Focus on:
 
 **Balance depth with clarity**: Comprehensive enough to be useful, distilled enough to be digestible.
 
-## Report Format
+## Output Structure
 
-Here is a possible format for your analysis. You could adjust it to the task at hand. you could exclude any section and add any section you think is relevant:
+Create an onboarding guide that's easy to navigate and digest. Here's a suggested structure - adapt it based on what makes sense for this codebase:
 
 ### Overview
-[High-level summary of what this directory is and does]
+*Brief, high-level summary: What is this? What does it do? Why does it exist?*
 
-### Structure
-[Directory organization and key components]
+### Getting Started
+*Critical first steps: setup, running locally, seeing something work*
+- Prerequisites and installation
+- First-run experience
+- Quick validation (how to know it's working)
 
-### How to
-[Take most common tasks done in this directory and explain how to do them. From setup to contribution and adding certain features. Migrations, creating new features, anything important, etc.]
+### Architecture
+*How the codebase is organized and why*
+- Directory structure (what goes where)
+- Key abstractions and patterns
+- Data/control flow
+- Extension points
+- Use Mermaid diagrams if helpful (must be accurate!)
 
-### Architecture & Patterns
-[Design patterns, architectural decisions, conventions]
-[Feel free to draw Mermaid diagrams to help explain the architecture. Ensure the diagrams are compatible with the Markdown renderer and you MUST ensure that the diagrams are truthful and accurate.]
-
-### Dependencies & Integrations
-[What it depends on and how it connects to other parts. This could include other services, notable dependencies, protocols of communication, tooling, etc.]
+### How To
+*Common tasks developers will need to do*
+- Add new features (patterns to follow)
+- Run/write tests
+- Debug issues
+- Build and deploy
+- Other frequent operations
 
 ### Key Insights
-[Important observations, notable implementation details]
+*Important knowledge that accelerates understanding*
+- Design decisions and their rationale
+- Conventions and patterns (the "house style")
+- Gotchas and non-obvious behavior
+- Modern vs legacy approaches (what to emulate vs avoid)
+- Notable implementation details
 
-### Open Questions & Uncertainties (ALWAYS INCLUDE THIS SECTION!)
-[Parts you're uncertain about, ambiguities in the code, areas that need clarification, or aspects where you'd benefit from more context]
+### Dependencies & Integrations
+*External things this codebase relies on or connects to*
+- Key dependencies (what and why)
+- External services/APIs
+- Configuration approach
 
-The "Open Questions & Uncertainties" section is important - be honest about what you don't fully understand or what seems ambiguous.
+### Open Questions & Uncertainties
+*ALWAYS INCLUDE: Be honest about what's unclear or ambiguous*
+- Parts you're uncertain about
+- Ambiguities in the code
+- Areas needing clarification
+- Questions a new developer might have
+
+**Remember**: Be comprehensive but distilled. Focus on what helps developers become productive, not exhaustive documentation.
