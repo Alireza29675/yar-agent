@@ -1,5 +1,23 @@
 # yar-agent
 
+## 0.3.0
+
+### Minor Changes
+
+- 27710c6: Automatic file update detection and improved study command
+
+  - **Breaking**: Removed `-u`/`--update` flag - now automatically detects and updates existing output files
+  - **Enhancement**: Write and Edit tools now display file paths in terminal output
+  - **Enhancement**: Prompts now prefer Edit tool over Write for iterative updates
+  - **Improvement**: Study command now focuses on effective onboarding rather than exhaustive documentation
+
+### Patch Changes
+
+- f1db03f: Clean up branding and documentation
+
+  - Remove "Your AI Research Assistant" expansion from all documentation
+  - Consistently use motto "Understand Complex Codebases Fast" across package.json, CLAUDE.md, and system prompts
+
 ## 0.2.0
 
 ### Minor Changes
