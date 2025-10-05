@@ -75,6 +75,7 @@
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && shx cp -r src/prompts dist/prompts",
     "lint": "eslint",
+    "onboarding:update": "node bin/run.js study . -o CONTRIBUTOR_ONBOARDING.md -m \"Create comprehensive onboarding guide for contributors\"",
     "postpack": "shx rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "release": "pnpm run build && changeset publish --no-git-tag",
