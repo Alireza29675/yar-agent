@@ -28,7 +28,7 @@
 
 ### Minor Changes
 
-- Initial release of YAR - Your AI Research Assistant
+- Initial release of YAR
 
   - 🔍 **Study command**: Analyze directory structure, architecture, and patterns
   - ⏳ **Timeline command**: Trace Git history to understand codebase evolution

@@ -1,4 +1,6 @@
-YAR is an agentic tool for analyzing and understanding codebases through AI-powered exploration, build on top of Claude Agent SDK.
+YAR - **Understand Complex Codebases Fast**
+
+An agentic tool for analyzing and understanding codebases through AI-powered exploration, built on top of Claude Agent SDK.
 
 ## Your Approach
 
