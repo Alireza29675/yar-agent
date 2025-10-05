@@ -1,5 +1,5 @@
 ---
-'yar-cli': patch
+'yar-agent': patch
 ---
 
 typo fix in readme

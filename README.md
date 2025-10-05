@@ -2,13 +2,13 @@
 
 An agentic CLI tool for understanding codebases through deep code exploration, built with [Claude Agent SDK](https://docs.claude.com/en/api/agent-sdk/overview).
 
-[![npm version](https://badge.fury.io/js/yar-cli.svg)](https://www.npmjs.com/package/yar-cli)
+[![npm version](https://badge.fury.io/js/yar-agent.svg)](https://www.npmjs.com/package/yar-agent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Installation
 
 ```bash
-npm install -g yar-cli
+npm install -g yar-agent
 
 yar --version
 ```

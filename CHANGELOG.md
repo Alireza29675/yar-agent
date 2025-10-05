@@ -1,4 +1,4 @@
-# yar-cli
+# yar-agent
 
 ## 0.1.1
 
