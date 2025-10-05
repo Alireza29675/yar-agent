@@ -1,5 +1,11 @@
 # yar-agent
 
+## 0.3.1
+
+### Patch Changes
+
+- cb94edf: Improve documentation narrative
+
 ## 0.3.0
 
 ### Minor Changes
