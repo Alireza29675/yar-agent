@@ -2,9 +2,10 @@ import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {READ_ONLY_TOOLS} from '../config/tools.js'
+import {createFileAccessValidator} from '../config/tool-validators.js'
 import {executeAgent} from '../services/agent.js'
 import {buildPrompt, loadPromptFromFile} from '../services/prompt-builder.js'
-import {getCurrentDateContext} from '../utils/date.js'
+import {getCurrentDateContext, getOutputContext} from '../utils/date.js'
 
 // Get current directory in ES modules
 const __filename = fileURLToPath(import.meta.url)
@@ -20,6 +21,8 @@ export interface TimelineOptions {
   directory: string
   /** Important message from user */
   message?: string
+  /** Output file path where the agent should write the timeline */
+  outputFile: string
   /** Whether to show UI (false when outputting to file) */
   showUI?: boolean
 }
@@ -28,8 +31,6 @@ export interface TimelineOptions {
  * Timeline Task Result
  */
 export interface TimelineResult {
-  /** The full timeline analysis text */
-  analysis: string
   /** Duration in seconds */
   duration: number
   /** Number of messages exchanged */
@@ -44,22 +45,27 @@ export interface TimelineResult {
  * Build a timeline-specific prompt
  *
  * @param directory - Directory to analyze
+ * @param outputFile - Output file where timeline should be written
  * @param message - Optional user message
  * @param context - Optional additional context
  * @returns The formatted timeline prompt
  */
 async function buildTimelinePrompt(
   directory: string,
+  outputFile: string,
   message?: string,
   context?: string,
 ): Promise<string> {
   // Load base prompt from markdown file with variable substitution
   const promptFile = join(__dirname, '..', 'prompts', 'tasks', 'timeline.md')
-  const basePrompt = await loadPromptFromFile(promptFile, {directory})
+  const basePrompt = await loadPromptFromFile(promptFile, {directory, outputFile})
 
-  // Add date context
+  // Add date context and output file info
   const dateContext = getCurrentDateContext()
-  const fullContext = context ? `${dateContext}\n\n${context}` : dateContext
+  const outputFileContext = getOutputContext(outputFile)
+  const fullContext = context
+    ? `${dateContext}\n${outputFileContext}\n\n${context}`
+    : `${dateContext}\n${outputFileContext}`
 
   // Add message and context using the prompt builder
   return buildPrompt({
@@ -73,16 +79,21 @@ async function buildTimelinePrompt(
  * Timeline Task
  *
  * Analyzes the evolution of a directory over time using Git history.
+ * The agent will write the timeline directly to the output file.
  */
 export async function timelineTask(options: TimelineOptions): Promise<TimelineResult> {
-  const {context, directory, message, showUI = true} = options
+  const {context, directory, message, outputFile, showUI = true} = options
 
   // Build the prompt using the task-specific prompt builder
-  const prompt = await buildTimelinePrompt(directory, message, context)
+  const prompt = await buildTimelinePrompt(directory, outputFile, message, context)
 
-  // Create agent configuration with read-only tools + Bash for git commands
+  // Create file access validator to restrict editing to only the output file
+  const fileValidator = createFileAccessValidator(outputFile)
+
+  // Create agent configuration with read-only tools + Bash for git + Edit/Write restricted to output
   const config = {
-    allowedTools: [...READ_ONLY_TOOLS, 'Bash' as const],
+    allowedTools: [...READ_ONLY_TOOLS, 'Bash' as const, 'Edit' as const, 'Write' as const],
+    canUseTool: fileValidator,
   }
 
   // Execute the agent
@@ -93,7 +104,6 @@ export async function timelineTask(options: TimelineOptions): Promise<TimelineRe
   })
 
   return {
-    analysis: result.text,
     duration: result.duration,
     messageCount: result.messageCount,
     toolUseCounts: result.toolUseCounts,

@@ -105,24 +105,29 @@ ${stdinInput}`)
     }
     theme().divider()
 
-    // Run the study task
+    // Run the study task (agent will write to output file)
     const result = await studyTask({
       context: contextString,
       directory,
       message: message || undefined,
+      outputFile: resolve(output),
       showUI,
     })
 
-    // Write to file
-    await fs.writeFile(output, result.analysis, 'utf8')
+    // Verify output file was created
+    try {
+      await fs.access(output)
+    } catch {
+      this.error('Agent failed to create the output file. Please check the logs.')
+    }
 
     // Display completion summary
     theme().divider()
 
     theme().summaryBox('Complete', {
-      'Output': output,
       'Duration': `${result.duration}s`,
       'Messages': result.messageCount,
+      'Output': output,
       'Tools': result.totalToolUseCount,
     })
 

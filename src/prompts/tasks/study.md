@@ -2,7 +2,14 @@ Study the directory at path: {{directory}}
 
 Your goal is to provide a thorough understanding of this directory and its contents. This will be used to help the user understand the codebase and make decisions about how to contribute to it. This task is about understanding the current state and ways of working.
 
-**IMPORTANT**: Include the current date at the very beginning of your analysis output. This analysis is time-sensitive and the date provides crucial context for when this snapshot was taken.
+**IMPORTANT - Output File**:
+- You MUST write your analysis to the output file at: {{outputFile}}
+- Write your analysis progressively as you investigate - don't wait until the end
+- Start by writing an initial draft, then update and expand it as you discover more
+- If the file already exists, read it first and update it with your new findings
+- Use the Edit tool to update specific sections or Write tool to create/replace the entire file
+
+**IMPORTANT - Date**: Include the current date at the very beginning of your analysis output. This analysis is time-sensitive and the date provides crucial context for when this snapshot was taken.
 
 ## Areas you can study
 

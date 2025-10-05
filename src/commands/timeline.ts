@@ -102,16 +102,21 @@ ${stdinInput}`)
     }
     theme().divider()
 
-    // Run the timeline task
+    // Run the timeline task (agent will write to output file)
     const result = await timelineTask({
       context: contextString,
       directory,
       message: message || undefined,
+      outputFile: resolve(output),
       showUI,
     })
 
-    // Write to file
-    await fs.writeFile(output, result.analysis, 'utf8')
+    // Verify output file was created
+    try {
+      await fs.access(output)
+    } catch {
+      this.error('Agent failed to create the output file. Please check the logs.')
+    }
 
     // Display completion summary
     theme().divider()

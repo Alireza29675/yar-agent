@@ -2,7 +2,14 @@ Analyze the evolution of the directory at path: {{directory}}
 
 You are analyzing a Git repository to understand how this directory has evolved over time.
 
-**IMPORTANT**: Include the current date at the very beginning of your analysis output. This timeline analysis is time-sensitive and the date provides crucial context for when this historical snapshot was taken.
+**IMPORTANT - Output File**:
+- You MUST write your timeline analysis to the output file at: {{outputFile}}
+- Write your analysis progressively as you investigate - don't wait until the end
+- Start by writing an initial draft, then update and expand it as you discover more commits and patterns
+- If the file already exists, read it first and update it with your new findings
+- Use the Edit tool to update specific sections or Write tool to create/replace the entire file
+
+**IMPORTANT - Date**: Include the current date at the very beginning of your analysis output. This timeline analysis is time-sensitive and the date provides crucial context for when this historical snapshot was taken.
 
 ## Your Task
 

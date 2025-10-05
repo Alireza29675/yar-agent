@@ -5,7 +5,7 @@
  * and tracking execution statistics.
  */
 
-import {query} from '@anthropic-ai/claude-agent-sdk'
+import {query, type CanUseTool} from '@anthropic-ai/claude-agent-sdk'
 import {readFile} from 'node:fs/promises'
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -48,6 +48,8 @@ export interface ContextItem {
 export interface AgentConfig {
   /** Allowed tools for the agent to use */
   allowedTools: AvailableTool[]
+  /** Optional validator function to control which tool calls are allowed */
+  canUseTool?: CanUseTool
   /** Optional additional system prompt to append after base prompt */
   systemPrompt?: string
 }
@@ -162,6 +164,7 @@ export async function executeAgent(
   const result = await query({
     options: {
       allowedTools: config.allowedTools,
+      canUseTool: config.canUseTool,
       systemPrompt: fullSystemPrompt,
     },
     prompt: finalPrompt,
