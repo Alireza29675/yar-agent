@@ -1,5 +1,11 @@
 # yar-agent
 
+## 0.1.2
+
+### Patch Changes
+
+- 5786a7b: typo fix in readme
+
 ## 0.1.1
 
 ### Patch Changes

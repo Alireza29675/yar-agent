@@ -1,7 +1,7 @@
 {
   "name": "yar-agent",
   "description": "Your AI Research Assistant - An agentic CLI tool for analyzing and understanding codebases",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Alireza Sheikholmolouki",
   "bin": {
     "yar": "./bin/run.js"
