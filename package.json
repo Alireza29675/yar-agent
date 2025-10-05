@@ -77,7 +77,7 @@
     "lint": "eslint",
     "postpack": "shx rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
-    "release": "pnpm run build && changeset publish",
+    "release": "pnpm run build && changeset publish --no-git-tag",
     "version": "oclif readme && git add README.md"
   },
   "types": "dist/index.d.ts"
