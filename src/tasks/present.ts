@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url'
 import type {AvailableTool} from '../config/tools.js'
 import {executeAgent} from '../services/agent.js'
 import {buildPrompt, loadPromptFromFile} from '../services/prompt-builder.js'
+import {getCurrentDateContext} from '../utils/date.js'
 
 // Get current directory in ES modules
 const __filename = fileURLToPath(import.meta.url)
@@ -49,10 +50,14 @@ async function buildPresentPrompt(content: string, message?: string): Promise<st
   const promptFile = join(__dirname, '..', 'prompts', 'tasks', 'present.md')
   const basePrompt = await loadPromptFromFile(promptFile, {})
 
+  // Add date context
+  const dateContext = getCurrentDateContext()
+  const fullContext = `${dateContext}\n\n${content}`
+
   // Add the content and message
   return buildPrompt({
     basePrompt,
-    context: content,
+    context: fullContext,
     message,
   })
 }

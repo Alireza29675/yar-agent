@@ -2,6 +2,8 @@ Study the directory at path: {{directory}}
 
 Your goal is to provide a thorough understanding of this directory and its contents. This will be used to help the user understand the codebase and make decisions about how to contribute to it. This task is about understanding the current state and ways of working.
 
+**IMPORTANT**: Include the current date at the very beginning of your analysis output. This analysis is time-sensitive and the date provides crucial context for when this snapshot was taken.
+
 ## Areas you can study
 
 repo boot & anatomy

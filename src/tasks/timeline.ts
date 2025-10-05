@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url'
 import {READ_ONLY_TOOLS} from '../config/tools.js'
 import {executeAgent} from '../services/agent.js'
 import {buildPrompt, loadPromptFromFile} from '../services/prompt-builder.js'
+import {getCurrentDateContext} from '../utils/date.js'
 
 // Get current directory in ES modules
 const __filename = fileURLToPath(import.meta.url)
@@ -56,10 +57,14 @@ async function buildTimelinePrompt(
   const promptFile = join(__dirname, '..', 'prompts', 'tasks', 'timeline.md')
   const basePrompt = await loadPromptFromFile(promptFile, {directory})
 
+  // Add date context
+  const dateContext = getCurrentDateContext()
+  const fullContext = context ? `${dateContext}\n\n${context}` : dateContext
+
   // Add message and context using the prompt builder
   return buildPrompt({
     basePrompt,
-    context,
+    context: fullContext,
     message,
   })
 }

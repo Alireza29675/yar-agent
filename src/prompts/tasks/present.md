@@ -1,5 +1,7 @@
 Create a reveal.js presentation that teaches the provided content effectively.
 
+**IMPORTANT**: Include the current date somewhere at the beginning of the presentation (e.g., on the title slide or in a subtitle). This presentation is based on time-sensitive content and the date provides crucial context.
+
 ## Your Goal
 
 **This is a teaching tool.** The presentation should onboard someone to the content in the best way possible. Think of it as a self-contained learning experience without a narrator - the slides must be clear enough to understand on their own, but not overwhelming with information.

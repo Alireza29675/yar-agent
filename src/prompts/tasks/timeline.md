@@ -2,6 +2,8 @@ Analyze the evolution of the directory at path: {{directory}}
 
 You are analyzing a Git repository to understand how this directory has evolved over time.
 
+**IMPORTANT**: Include the current date at the very beginning of your analysis output. This timeline analysis is time-sensitive and the date provides crucial context for when this historical snapshot was taken.
+
 ## Your Task
 
 Trace the history of this directory by examining Git commits that affected it. Focus on understanding:
