@@ -33,36 +33,22 @@ export default class Timeline extends Command {
       description: 'Output file path to write the timeline to',
       required: true,
     }),
-    update: Flags.boolean({
-      char: 'u',
-      default: false,
-      description: 'Update existing output file with new findings',
-    }),
   }
 
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Timeline)
     const {directory} = args
-    const {message, output, update} = flags
+    const {message, output} = flags
 
     // Resolve full path
     const fullPath = resolve(directory)
 
-    // Check if output file exists
+    // Check if output file exists and read it
     let existingContent: string | undefined
     try {
       existingContent = await fs.readFile(output, 'utf8')
-      // File exists
-      if (!update) {
-        this.error(
-          `Output file already exists: ${output}\nUse --update or -u flag to update the existing file with new findings.`
-        )
-      }
     } catch {
       // File doesn't exist, which is fine
-      if (update) {
-        this.error('Cannot use --update flag: output file does not exist yet.')
-      }
     }
 
     // Check for piped input
@@ -93,11 +79,11 @@ ${stdinInput}`)
 
     // Display info
     console.log()
-    theme().info(`${update ? 'Updating timeline' : 'Tracing history'}: ${fullPath}`)
+    theme().info(`${existingContent ? 'Updating timeline' : 'Tracing history'}: ${fullPath}`)
     if (message) {
       theme().info(`Focus: ${message}`)
     }
-    if (update) {
+    if (existingContent) {
       theme().info(`Mode: Updating existing timeline`)
     }
     theme().divider()

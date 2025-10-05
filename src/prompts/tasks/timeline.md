@@ -4,10 +4,11 @@ You are analyzing a Git repository to understand how this directory has evolved 
 
 **IMPORTANT - Output File**:
 - You MUST write your timeline analysis to the output file at: {{outputFile}}
+- FIRST, check if the output file already exists by reading it
+- If the file exists, use Edit tool to update it with your new findings
+- If the file doesn't exist, create it with Write tool, then use Edit tool for all subsequent updates
 - Write your analysis progressively as you investigate - don't wait until the end
-- Start by writing an initial draft, then update and expand it as you discover more commits and patterns
-- If the file already exists, read it first and update it with your new findings
-- Use the Edit tool to update specific sections or Write tool to create/replace the entire file
+- For iterative updates, ALWAYS use the Edit tool to modify specific sections - DO NOT use Write to replace the entire file repeatedly
 
 **IMPORTANT - Date**: Include the current date at the very beginning of your analysis output. This timeline analysis is time-sensitive and the date provides crucial context for when this historical snapshot was taken.
 

@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import boxen from 'boxen'
 import chalk from 'chalk'
 import Table from 'cli-table3'
@@ -177,6 +178,7 @@ export class DefaultTheme implements Theme {
     for (const [key, value] of Object.entries(items)) {
       console.log(`  ${this.colors.primary('•')} ${this.colors.dim(key + ':')} ${this.colors.highlight(String(value))}`)
     }
+
     console.log()
   }
 
@@ -220,6 +222,7 @@ export class DefaultTheme implements Theme {
   toolUse(toolName: string, input?: Record<string, unknown>): void {
     const toolIcons: Record<string, string> = {
       Bash: '⚡',
+      Edit: '✏️',
       Glob: '🔍',
       Grep: '🔎',
       ListDir: '📂',
@@ -263,7 +266,14 @@ export class DefaultTheme implements Theme {
           const cmd = command.length > maxLength ? command.slice(0, maxLength) + '...' : command
           return cmd
         }
+
         return ''
+      }
+
+      case 'Edit': {
+        const {file_path: filePath1, filePath: filePath2, path} = input
+        const resolvedPath = path || filePath1 || filePath2
+        return resolvedPath as string || ''
       }
 
       case 'Glob': {
@@ -284,6 +294,12 @@ export class DefaultTheme implements Theme {
       }
 
       case 'Read': {
+        const {file_path: filePath1, filePath: filePath2, path} = input
+        const resolvedPath = path || filePath1 || filePath2
+        return resolvedPath as string || ''
+      }
+
+      case 'Write': {
         const {file_path: filePath1, filePath: filePath2, path} = input
         const resolvedPath = path || filePath1 || filePath2
         return resolvedPath as string || ''

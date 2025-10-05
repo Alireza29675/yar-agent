@@ -21,7 +21,7 @@
 
   - Add quick start section showing complete workflow
   - Improve command examples and descriptions
-  - Add detailed CI/CD integration guide with update flag usage
+  - Add detailed CI/CD integration guide with automatic file update detection
   - Better explain the purpose of each command
 
 ## 0.1.0
@@ -33,6 +33,6 @@
   - 🔍 **Study command**: Analyze directory structure, architecture, and patterns
   - ⏳ **Timeline command**: Trace Git history to understand codebase evolution
   - 🎨 **Present command**: Convert content to reveal.js presentations
-  - 🔄 **Update mode**: Keep documentation up-to-date with --update flag
+  - 🔄 **Automatic updates**: Detects and updates existing files automatically
   - 📊 **Clean UI**: Real-time progress feedback with colors and emojis
   - Built with Claude Agent SDK

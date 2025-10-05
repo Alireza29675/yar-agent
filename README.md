@@ -83,13 +83,13 @@ yar present --help
 
 ## Use YAR in CI to keep documentation up to date
 
-There is a magic trick in Yar to **update** an existing generated document. You just need to add the `-u` or `--update` flag.
+YAR automatically detects if the output file already exists and updates it with new findings. No special flag needed!
 
 ```bash
-yar study . -o docs/GUIDE.md -u # This will first read the existing GUIDE.md file and then update it based on the new findings
+yar study . -o docs/GUIDE.md  # Creates new file or updates existing one
 ```
 
-In Github Actions, you can make use of `-u` as following:
+In Github Actions, you can use YAR to keep documentation fresh:
 
 ```yaml
 - name: Setup Claude Code CLI
@@ -98,7 +98,7 @@ In Github Actions, you can make use of `-u` as following:
     echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> $GITHUB_ENV
 
 - name: Update documentation
-  run: yar study . -o docs/GUIDE.md --update
+  run: yar study . -o docs/GUIDE.md
 
 - name: Commit changes
   run: |

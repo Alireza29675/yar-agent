@@ -5,7 +5,7 @@
  * and tracking execution statistics.
  */
 
-import {query, type CanUseTool} from '@anthropic-ai/claude-agent-sdk'
+import {type CanUseTool, query} from '@anthropic-ai/claude-agent-sdk'
 import {readFile} from 'node:fs/promises'
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -161,48 +161,66 @@ export async function executeAgent(
     ? `${basePrompt}\n\n${config.systemPrompt}`
     : basePrompt
 
-  const result = await query({
-    options: {
-      allowedTools: config.allowedTools,
-      canUseTool: config.canUseTool,
-      systemPrompt: fullSystemPrompt,
-    },
-    prompt: finalPrompt,
-  })
-
-  for await (const message of result) {
-    if (message.type === 'assistant') {
-      messageCount++
-      const {content, stop_reason: stopReason} = message.message
-
-      processAssistantMessage(content, {
-        onBlock(block) {
-          if (block.type === 'text' && block.text && block.text.trim()) {
-            textOutput += block.text + '\n'
-            if (onText) {
-              onText(block.text)
-            }
-          } else if (block.type === 'tool_use') {
-            if (block.name) {
-              toolUseCounts[block.name] = (toolUseCounts[block.name] || 0) + 1
-            }
-
-            if (onToolUse && block.name) {
-              onToolUse(block.name, block.input)
-            }
-          }
-        },
-        showUI,
-      })
-
-      // Show thinking indicator if continuing
-      if (stopReason === 'tool_use' && showUI) {
-        theme().thinking()
-      }
-    } else if (message.type === 'result') {
-      // Result message contains final summary info
-      // We can process it if needed in the future
+  // Set up AbortController for Ctrl+C handling
+  const abortController = new AbortController()
+  const handleSigInt = () => {
+    if (showUI) {
+      theme().info('\nInterrupting agent...')
     }
+
+    abortController.abort()
+  }
+
+  process.on('SIGINT', handleSigInt)
+
+  try {
+    const result = await query({
+      options: {
+        abortController,
+        allowedTools: config.allowedTools,
+        canUseTool: config.canUseTool,
+        systemPrompt: fullSystemPrompt,
+      },
+      prompt: finalPrompt,
+    })
+
+    for await (const message of result) {
+      if (message.type === 'assistant') {
+        messageCount++
+        const {content, stop_reason: stopReason} = message.message
+
+        processAssistantMessage(content, {
+          onBlock(block) {
+            if (block.type === 'text' && block.text && block.text.trim()) {
+              textOutput += block.text + '\n'
+              if (onText) {
+                onText(block.text)
+              }
+            } else if (block.type === 'tool_use') {
+              if (block.name) {
+                toolUseCounts[block.name] = (toolUseCounts[block.name] || 0) + 1
+              }
+
+              if (onToolUse && block.name) {
+                onToolUse(block.name, block.input)
+              }
+            }
+          },
+          showUI,
+        })
+
+        // Show thinking indicator if continuing
+        if (stopReason === 'tool_use' && showUI) {
+          theme().thinking()
+        }
+      } else if (message.type === 'result') {
+        // Result message contains final summary info
+        // We can process it if needed in the future
+      }
+    }
+  } finally {
+    // Clean up signal listener
+    process.off('SIGINT', handleSigInt)
   }
 
   const duration = Number.parseFloat(((Date.now() - startTime) / 1000).toFixed(2))
