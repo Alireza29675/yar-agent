@@ -1,5 +1,12 @@
 # yar-agent
 
+## 0.2.0
+
+### Minor Changes
+
+- da01c6d: Add current date context to all task outputs for time-sensitive analysis
+- 8cf8dba: Rename package from yar-cli to yar-agent
+
 ## 0.1.2
 
 ### Patch Changes
