@@ -1,6 +1,7 @@
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
+import {buildTimelineConfig, type TimelineTaskConfig} from '../config/task-configurations.js'
 import {READ_ONLY_TOOLS} from '../config/tools.js'
 import {createFileAccessValidator} from '../config/tool-validators.js'
 import {executeAgent} from '../services/agent.js'
@@ -25,6 +26,8 @@ export interface TimelineOptions {
   outputFile: string
   /** Whether to show UI (false when outputting to file) */
   showUI?: boolean
+  /** Task configuration options */
+  taskConfig?: TimelineTaskConfig
 }
 
 /**
@@ -48,6 +51,7 @@ export interface TimelineResult {
  * @param outputFile - Output file where timeline should be written
  * @param message - Optional user message
  * @param context - Optional additional context
+ * @param taskConfig - Optional task configuration options
  * @returns The formatted timeline prompt
  */
 async function buildTimelinePrompt(
@@ -55,6 +59,7 @@ async function buildTimelinePrompt(
   outputFile: string,
   message?: string,
   context?: string,
+  taskConfig?: TimelineTaskConfig,
 ): Promise<string> {
   // Load base prompt from markdown file with variable substitution
   const promptFile = join(__dirname, '..', 'prompts', 'tasks', 'timeline.md')
@@ -67,11 +72,15 @@ async function buildTimelinePrompt(
     ? `${dateContext}\n${outputFileContext}\n\n${context}`
     : `${dateContext}\n${outputFileContext}`
 
-  // Add message and context using the prompt builder
+  // Build task configuration parameters
+  const taskConfiguration = taskConfig ? buildTimelineConfig(taskConfig) : undefined
+
+  // Add message, task config, and context using the prompt builder
   return buildPrompt({
     basePrompt,
     context: fullContext,
     message,
+    taskConfiguration,
   })
 }
 
@@ -82,10 +91,10 @@ async function buildTimelinePrompt(
  * The agent will write the timeline directly to the output file.
  */
 export async function timelineTask(options: TimelineOptions): Promise<TimelineResult> {
-  const {context, directory, message, outputFile, showUI = true} = options
+  const {context, directory, message, outputFile, showUI = true, taskConfig} = options
 
   // Build the prompt using the task-specific prompt builder
-  const prompt = await buildTimelinePrompt(directory, outputFile, message, context)
+  const prompt = await buildTimelinePrompt(directory, outputFile, message, context, taskConfig)
 
   // Create file access validator to restrict editing to only the output file
   const fileValidator = createFileAccessValidator(outputFile)

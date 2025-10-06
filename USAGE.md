@@ -57,44 +57,57 @@ Analyzes a directory and creates comprehensive onboarding guides.
 #### Basic Usage
 
 ```bash
-# Study current directory
-yar study . -o GUIDE.md
+# Study current directory (creates GUIDE.md)
+yar study .
 
 # Study specific directory
-yar study ./src -o analysis.md
+yar study ./src
 
 # Study with focus
-yar study . -m "Focus on security patterns" -o security-guide.md
+yar study . -m "Focus on security patterns"
+
+# Custom output file
+yar study . -o analysis.md
 ```
 
 #### Options
 
-- **`-o, --output <file>`** (required) - Output file path
+- **`-o, --output <file>`** (optional, default: GUIDE.md) - Output file path
 - **`-m, --message <text>`** - Focus message to guide the analysis
+- **`--effort <level>`** (optional, default: mid) - Analysis effort level:
+  - `low` - Quick overview focusing on most important aspects
+  - `mid` - Balanced analysis with good coverage
+  - `high` - Thorough investigation, leave no stone unturned
 
 #### Features
 
 **Automatic Updates**: If the output file exists, YAR automatically reads it and updates with new findings:
 
 ```bash
-# First run - creates new file
-yar study . -o GUIDE.md
+# First run - creates GUIDE.md
+yar study .
 
-# Second run - updates existing file with new insights
-yar study . -o GUIDE.md
+# Second run - updates existing GUIDE.md with new insights
+yar study .
 ```
 
 **Piped Input**: Provide additional context via stdin:
 
 ```bash
 # Analyze with git diff context
-git diff | yar study . -o changes.md
+git diff | yar study .
 
 # Analyze with notes
-cat notes.txt | yar study ./src -o analysis.md
+cat notes.txt | yar study ./src
 
 # Analyze with specific focus
-echo "Focus on authentication" | yar study . -o auth-guide.md
+echo "Focus on authentication" | yar study .
+
+# Thorough deep-dive analysis
+yar study . --effort=high
+
+# Quick high-level overview
+yar study . --effort=low
 ```
 
 #### What It Analyzes
@@ -124,20 +137,27 @@ Traces Git history to understand how a codebase evolved.
 #### Basic Usage
 
 ```bash
-# Analyze current directory's evolution
-yar timeline . -o EVOLUTION.md
+# Analyze current directory's evolution (creates TIMELINE.md)
+yar timeline .
 
 # Analyze specific directory
-yar timeline ./src/api -o api-evolution.md
+yar timeline ./src/api
 
 # Focus on specific aspects
-yar timeline . -m "Focus on architecture changes" -o arch-timeline.md
+yar timeline . -m "Focus on architecture changes"
+
+# Custom output file
+yar timeline . -o EVOLUTION.md
 ```
 
 #### Options
 
-- **`-o, --output <file>`** (required) - Output file path
+- **`-o, --output <file>`** (optional, default: TIMELINE.md) - Output file path
 - **`-m, --message <text>`** - Focus message to guide the analysis
+- **`--effort <level>`** (optional, default: mid) - Analysis effort level:
+  - `low` - Quick overview of evolution
+  - `mid` - Balanced timeline analysis
+  - `high` - Detailed historical investigation
 
 #### Features
 
@@ -147,14 +167,14 @@ yar timeline . -m "Focus on architecture changes" -o arch-timeline.md
 
 ```bash
 # Add new commits to existing timeline
-yar timeline . -o EVOLUTION.md
+yar timeline .
 ```
 
 **Piped Input**: Add context for specific analysis:
 
 ```bash
 # Focus on recent changes
-git log --since="1 month ago" --oneline | yar timeline . -o recent.md
+git log --since="1 month ago" --oneline | yar timeline .
 ```
 
 #### What It Analyzes
@@ -182,25 +202,25 @@ Converts markdown content into beautiful reveal.js presentations.
 #### Basic Usage
 
 ```bash
-# Create presentation from file
-yar present -o slides.html -f GUIDE.md
-
-# Create and serve immediately
-yar present -o slides.html -f GUIDE.md --serve
+# Create presentation from file (creates GUIDE.slides.html and serves it)
+yar present -f GUIDE.md
 
 # Combine multiple sources
-yar present -o slides.html -f GUIDE.md -f EVOLUTION.md
+yar present -f GUIDE.md -f TIMELINE.md
 
-# From stdin
-cat notes.md | yar present -o slides.html
+# Custom output file
+yar present -f GUIDE.md -o slides.html
+
+# Don't serve automatically
+yar present -f GUIDE.md --no-serve
 ```
 
 #### Options
 
-- **`-o, --output <file>`** (required) - Output HTML file path
-- **`-f, --file <file>`** - Input file(s) (can be used multiple times)
+- **`-f, --file <file>`** (required) - Input file(s) (can be used multiple times)
+- **`-o, --output <file>`** (optional, default: GUIDE.slides.html) - Output HTML file path
 - **`-m, --message <text>`** - Additional instructions for the presentation
-- **`--serve`** - Automatically open presentation in browser
+- **`--serve / --no-serve`** - Automatically open presentation in browser (default: true)
 
 #### Features
 
@@ -209,13 +229,13 @@ cat notes.md | yar present -o slides.html
 - All content included
 - No external dependencies after first load
 
-**Browser Opens Automatically**: With `--serve` flag, YAR starts a local server and opens your browser.
+**Browser Opens Automatically**: By default, YAR starts a local server and opens your browser. Use `--no-serve` to skip this.
 
 **Progressive Updates**: Can update existing presentations:
 
 ```bash
 # Update with new content
-yar present -o slides.html -f updated-guide.md
+yar present -f updated-guide.md -u
 ```
 
 #### Customization
@@ -223,7 +243,7 @@ yar present -o slides.html -f updated-guide.md
 Guide presentation style with the `-m` flag:
 
 ```bash
-yar present -o slides.html -f GUIDE.md \
+yar present -f GUIDE.md \
   -m "Use dark theme with blue accents. Focus on visual diagrams."
 ```
 
@@ -233,10 +253,10 @@ yar present -o slides.html -f GUIDE.md \
 
 ```bash
 # 1. Create comprehensive guide
-yar study . -o ONBOARDING.md
+yar study .
 
 # 2. Turn it into a presentation
-yar present -o onboarding-slides.html -f ONBOARDING.md --serve
+yar present -f GUIDE.md
 
 # 3. Share both files with new team member
 ```
@@ -245,33 +265,30 @@ yar present -o onboarding-slides.html -f ONBOARDING.md --serve
 
 ```bash
 # 1. Study current state
-yar study ./legacy-module -o current-state.md
+yar study ./legacy-module
 
 # 2. Trace evolution
-yar timeline ./legacy-module -o evolution.md
+yar timeline ./legacy-module
 
 # 3. Create presentation combining both
-yar present -o legacy-review.html \
-  -f current-state.md \
-  -f evolution.md \
-  --serve
+yar present -f GUIDE.md -f TIMELINE.md
 ```
 
 ### Security Review
 
 ```bash
 # Study with security focus
-yar study . -m "Focus on security: authentication, authorization, input validation, secrets management" -o security-review.md
+yar study . -m "Focus on security: authentication, authorization, input validation, secrets management"
 
 # Present findings
-yar present -o security-slides.html -f security-review.md
+yar present -f GUIDE.md
 ```
 
 ### Architecture Documentation
 
 ```bash
 # Analyze architecture
-yar study . -m "Focus on architecture: service boundaries, data flow, dependencies, patterns" -o ARCHITECTURE.md
+yar study . -m "Focus on architecture: service boundaries, data flow, dependencies, patterns"
 
 # Keep it updated on every commit (via Git hooks or CI)
 ```
@@ -280,8 +297,7 @@ yar study . -m "Focus on architecture: service boundaries, data flow, dependenci
 
 ```bash
 # Analyze recent changes
-git diff main...feature-branch | \
-  yar study . -m "Analyze these changes" -o change-analysis.md
+git diff main...feature-branch | yar study . -m "Analyze these changes"
 ```
 
 ## CI/CD Integration
@@ -318,8 +334,8 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          yar study . -o docs/GUIDE.md
-          yar timeline . -o docs/EVOLUTION.md
+          yar study .
+          yar timeline .
 
       - name: Commit changes
         run: |
@@ -337,9 +353,9 @@ update-docs:
   stage: docs
   script:
     - npm install -g @anthropic-ai/claude-code-cli yar-agent
-    - yar study . -o docs/GUIDE.md
-    - yar timeline . -o docs/EVOLUTION.md
-    - git add docs/
+    - yar study .
+    - yar timeline .
+    - git add GUIDE.md TIMELINE.md
     - git commit -m "docs: update analysis" || exit 0
     - git push
   only:
@@ -355,7 +371,7 @@ Update documentation before commits:
 ```bash
 # .git/hooks/pre-commit
 #!/bin/bash
-yar study . -o GUIDE.md
+yar study .
 git add GUIDE.md
 ```
 
@@ -372,10 +388,7 @@ yar study ./src/ui -o ui-guide.md
 yar study ./src/database -o db-guide.md
 
 # Combine into single presentation
-yar present -o complete-overview.html \
-  -f api-guide.md \
-  -f ui-guide.md \
-  -f db-guide.md
+yar present -f api-guide.md -f ui-guide.md -f db-guide.md -o complete-overview.html
 ```
 
 ### Iterative Analysis
@@ -384,7 +397,7 @@ Start broad, then focus:
 
 ```bash
 # 1. High-level overview
-yar study . -o overview.md
+yar study .
 
 # 2. Deep dive on specific area
 yar study ./src/auth -m "Focus on security implementation details" -o auth-deep-dive.md
@@ -394,29 +407,29 @@ yar study ./src/auth -m "Focus on security implementation details" -o auth-deep-
 
 ```bash
 # 1. Initial analysis
-yar study . -o GUIDE.md
+yar study .
 
 # 2. Review and add notes
 vim GUIDE.md  # Add your insights
 
 # 3. Update with latest changes
-yar study . -o GUIDE.md  # Preserves your notes, adds new findings
+yar study .  # Preserves your notes, adds new findings
 
 # 4. Create presentation
-yar present -o slides.html -f GUIDE.md --serve
+yar present -f GUIDE.md
 ```
 
 ### Combining with Other Tools
 
 ```bash
 # Analyze test coverage gaps
-npm run coverage | yar study . -m "Analyze test coverage" -o coverage-analysis.md
+npm run coverage | yar study . -m "Analyze test coverage"
 
 # Document API endpoints
-grep -r "app.get\|app.post" ./src | yar study . -m "Document API" -o api-docs.md
+grep -r "app.get\|app.post" ./src | yar study . -m "Document API"
 
 # Analyze dependencies
-npm list | yar study . -m "Document dependencies" -o deps.md
+npm list | yar study . -m "Document dependencies"
 ```
 
 ## Tips & Best Practices
@@ -425,18 +438,17 @@ npm list | yar study . -m "Document dependencies" -o deps.md
 
 ```bash
 # ❌ Vague
-yar study . -m "Look at security" -o guide.md
+yar study . -m "Look at security"
 
 # ✅ Specific
-yar study . -m "Focus on authentication flow, authorization checks, and how secrets are managed" -o guide.md
+yar study . -m "Focus on authentication flow, authorization checks, and how secrets are managed"
 ```
 
 ### 2. Use Piped Input for Context
 
 ```bash
 # Provide context about what you're looking for
-echo "We're migrating from REST to GraphQL" | \
-  yar study ./src/api -o migration-guide.md
+echo "We're migrating from REST to GraphQL" | yar study ./src/api
 ```
 
 ### 3. Update Documentation Regularly
@@ -450,9 +462,9 @@ echo "We're migrating from REST to GraphQL" | \
 
 ```bash
 # Understand both current state and evolution
-yar study . -o current.md
-yar timeline . -o evolution.md
-yar present -o complete.html -f current.md -f evolution.md
+yar study .
+yar timeline .
+yar present -f GUIDE.md -f TIMELINE.md
 ```
 
 ### 5. Version Your Documentation
@@ -493,7 +505,7 @@ For very large codebases:
 
 ```bash
 # Instead of analyzing everything
-yar study . -o huge.md  # Might be too broad
+yar study .  # Might be too broad
 
 # Focus on specific areas
 yar study ./src/core -o core.md

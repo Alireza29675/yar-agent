@@ -21,6 +21,12 @@ npm install -g yar-agent
 ### Study a codebase
 
 ```bash
+yar study .
+```
+
+Creates `GUIDE.md` by default. Customize output:
+
+```bash
 yar study . -o ONBOARDING.md
 ```
 
@@ -29,10 +35,16 @@ yar study . -o ONBOARDING.md
 or direct the agent to focus on specific areas:
 
 ```bash
-yar study . -o SECURITY_ONBOARDING.md -m "I'm joining this project as security engineer. Focus on security patterns"
+yar study . -m "I'm joining this project as security engineer. Focus on security patterns"
 ```
 
 ### Trace Codebase history
+
+```bash
+yar timeline .
+```
+
+Creates `TIMELINE.md` by default. Customize output:
 
 ```bash
 yar timeline . -o HISTORY.md
@@ -43,19 +55,25 @@ yar timeline . -o HISTORY.md
 To consume the documentations faster, you can use Yar to quickly generate a presentation:
 
 ```bash
-yar present -o onboarding.html -f ONBOARDING.md --serve
+yar present -f GUIDE.md
+```
+
+Creates `GUIDE.slides.html` and serves it by default. Customize:
+
+```bash
+yar present -f GUIDE.md -o onboarding.html --no-serve
 ```
 
 or combine multiple documentations into a single presentation:
 
 ```bash
-yar present -o presentation.html -f ONBOARDING.md -f HISTORY.md --serve
+yar present -f ONBOARDING.md -f TIMELINE.md
 ```
 
 or direct the agent to focus on specific aspects, or style the presentation:
 
 ```bash
-yar present -o presentation.html -f ONBOARDING.md -f HISTORY.md -m "Explain the API layer more detailed, and of course use dark theme with blue accents!" --serve
+yar present -f ONBOARDING.md -f TIMELINE.md -m "Explain the API layer more detailed, and of course use dark theme with blue accents!"
 ```
 
 Complete usage documentation: [USAGE.md](./USAGE.md)
@@ -70,17 +88,17 @@ Complete usage documentation: [USAGE.md](./USAGE.md)
 
 ```yaml
 - name: Update documentation
-  run: yar study . -o docs/GUIDE.md
+  run: yar study .
 ```
 
-> 💡 Tip: if -o file already exists, Yar will first read it and then automatically update it with new findings rather than overwriting it completely.
+> 💡 Tip: if the output file already exists, Yar will first read it and then automatically update it with new findings rather than overwriting it completely.
 
 **Progressive output**: Agents write analysis incrementally using Write and Edit tools, with file access restricted to specified output paths.
 
 **Piped input**: Accepts stdin for additional context.
 
 ```bash
-git diff | yar study . -o changes.md
+git diff | yar study .
 ```
 
 ## 🤝 Contributing

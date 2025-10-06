@@ -4,6 +4,7 @@ import {resolve} from 'node:path'
 
 import {theme} from '../lib/theme/index.js'
 import {studyTask} from '../tasks/study.js'
+import {ensureOutputDirectory} from '../utils/file.js'
 import {readStdin} from '../utils/stdin.js'
 
 export default class Study extends Command {
@@ -22,10 +23,16 @@ export default class Study extends Command {
     '<%= config.bin %> <%= command.id %> . -o analysis.md',
     '<%= config.bin %> <%= command.id %> . -m "Focus on security vulnerabilities"',
     'cat notes.txt | <%= config.bin %> <%= command.id %> ./src',
-    'git diff | <%= config.bin %> <%= command.id %> . -o analysis.md',
-    '<%= config.bin %> <%= command.id %> ./api -m "Explain the authentication flow" -o report.md',
+    'git diff | <%= config.bin %> <%= command.id %> .',
+    '<%= config.bin %> <%= command.id %> ./api -m "Explain the authentication flow"',
   ]
   static flags = {
+    effort: Flags.string({
+      default: 'mid',
+      description: 'Analysis effort level: low (quick overview), mid (balanced), high (thorough)',
+      options: ['low', 'mid', 'high'],
+      required: false,
+    }),
     message: Flags.string({
       char: 'm',
       description: 'Important message for the agent to pay attention to',
@@ -33,18 +40,22 @@ export default class Study extends Command {
     }),
     output: Flags.string({
       char: 'o',
-      description: 'Output file path to write the analysis to',
-      required: true,
+      default: 'GUIDE.md',
+      description: 'Output file path to write the analysis to (default: GUIDE.md)',
+      required: false,
     }),
   }
 
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Study)
     const {directory} = args
-    const {message, output} = flags
+    const {effort, message, output} = flags
 
     // Resolve full path
     const fullPath = resolve(directory)
+
+    // Ensure output directory exists
+    await ensureOutputDirectory(output)
 
     // Check if output file exists and read it
     let existingContent: string | undefined
@@ -98,6 +109,9 @@ ${stdinInput}`)
       message: message || undefined,
       outputFile: resolve(output),
       showUI,
+      taskConfig: {
+        effort: effort as 'low' | 'mid' | 'high',
+      },
     })
 
     // Verify output file was created

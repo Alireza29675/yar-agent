@@ -2,12 +2,14 @@
  * Prompt Builder Service
  *
  * Builds structured prompts for AI agents with support for context,
- * messages, and formatting. Includes support for loading prompts from
- * Markdown files with variable substitution.
+ * messages, task configuration, and formatting. Includes support for loading
+ * prompts from Markdown files with variable substitution.
  */
 
 import * as fs from 'node:fs/promises'
-import * as path from 'node:path'
+import {join} from 'node:path'
+
+import type {TaskConfigParameter} from '../config/task-configurations.js'
 
 /**
  * Options for building prompts
@@ -19,10 +21,12 @@ export interface PromptBuilderOptions {
   context?: string
   /** Optional important message from user to highlight */
   message?: string
+  /** Optional task configuration parameters */
+  taskConfiguration?: TaskConfigParameter[]
 }
 
 /**
- * Build a structured prompt with optional message and context
+ * Build a structured prompt with optional message, task configuration, and context
  *
  * @param options - Prompt builder options
  * @returns The formatted prompt string
@@ -32,24 +36,27 @@ export interface PromptBuilderOptions {
  * const prompt = buildPrompt({
  *   basePrompt: 'Analyze this codebase',
  *   message: 'Focus on security issues',
+ *   taskConfiguration: [{ name: 'effort', value: 'high', meaning: '...' }],
  *   context: gitDiff
  * })
  * ```
  */
 export function buildPrompt(options: PromptBuilderOptions): string {
-  const {basePrompt, context, message} = options
+  const {basePrompt, context, message, taskConfiguration} = options
   let prompt = basePrompt
 
-  // Add important user message with visual emphasis
-  if (message) {
+  // Add important user message and task configuration with visual emphasis
+  if (message || (taskConfiguration && taskConfiguration.length > 0)) {
+    const configList = taskConfiguration?.map((param) => `  - ${param.name}: ${param.value}\n    Meaning: ${param.meaning}`).join('\n')
     prompt += `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚠️  PAY ATTENTION TO THIS REQUEST BY USER:
 
-${message}
+${message ? `\nMESSAGE:\n${message}\n\n` : ''}
+${configList?.length ? `The user has configured the following parameters for this task:\n${configList}` : ''}
 
-This is a specific request from the user that should be prioritized in your analysis.
+These are specific requirements from the user that should be prioritized in your analysis.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
   }
 
@@ -122,6 +129,6 @@ export async function loadPromptFromDir(
   fileName: string,
   variables: Record<string, string> = {},
 ): Promise<string> {
-  const filePath = path.join(baseDir, fileName)
+  const filePath = join(baseDir, fileName)
   return loadPromptFromFile(filePath, variables)
 }

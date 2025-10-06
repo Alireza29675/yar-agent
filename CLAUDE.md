@@ -200,6 +200,176 @@ The agent service automatically:
 - Tracks tool usage statistics
 - Accumulates text output
 
+## Task Configuration System
+
+The task configuration system allows you to pass structured parameters to control agent behavior. **Each task defines its own specific configuration interface**, making it clear which parameters apply to which tasks.
+
+### Architecture
+
+Each task has:
+1. A specific config interface (e.g., `StudyTaskConfig`, `PresentTaskConfig`)
+2. A builder function (e.g., `buildStudyConfig()`, `buildPresentConfig()`)
+3. Task-specific or shared configuration parameters
+
+From `src/config/task-configurations.ts`:
+
+**Study Task** (`StudyTaskConfig`):
+- `effort?: 'low' | 'mid' | 'high'` - Analysis thoroughness
+
+**Timeline Task** (`TimelineTaskConfig`):
+- `effort?: 'low' | 'mid' | 'high'` - Historical analysis depth
+
+**Present Task** (`PresentTaskConfig`):
+- `theme?: 'light' | 'dark'` - Presentation theme
+
+**Shared Parameters** (can be reused):
+- `EFFORT_CONFIGS` - Used by both study and timeline
+- Each task imports and uses only what it needs
+
+### Using Task Configuration
+
+**In Commands** (each task has type-safe configs):
+```typescript
+import { studyTask } from '../tasks/study.js'
+import { timelineTask } from '../tasks/timeline.js'
+import { presentTask } from '../tasks/present.js'
+
+// Study task - type-safe StudyTaskConfig
+const studyResult = await studyTask({
+  directory: '.',
+  outputFile: 'GUIDE.md',
+  taskConfig: {
+    effort: 'high'  // Only valid StudyTaskConfig options
+  }
+})
+
+// Timeline task - type-safe TimelineTaskConfig
+const timelineResult = await timelineTask({
+  directory: '.',
+  outputFile: 'TIMELINE.md',
+  taskConfig: {
+    effort: 'low'  // Only valid TimelineTaskConfig options
+  }
+})
+
+// Present task - type-safe PresentTaskConfig (different from study/timeline)
+const presentResult = await presentTask({
+  content: markdown,
+  taskConfig: {
+    theme: 'dark'  // Present-specific configuration
+  }
+})
+```
+
+**Adding New Task-Specific Configuration**:
+
+1. Define the task's config interface and builder in `src/config/task-configurations.ts`:
+
+```typescript
+// ============================================================================
+// Review Task Configuration (example)
+// ============================================================================
+
+const STRICTNESS_CONFIGS: Record<'low' | 'high', TaskConfigParameter> = {
+  high: {
+    name: 'strictness',
+    value: 'high',
+    meaning: 'Apply strict code review standards, flag all potential issues'
+  },
+  low: {
+    name: 'strictness',
+    value: 'low',
+    meaning: 'Focus only on critical issues'
+  }
+}
+
+export interface ReviewTaskConfig {
+  strictness?: 'low' | 'high'
+  focus?: 'security' | 'performance' | 'style'
+}
+
+export function buildReviewConfig(options: ReviewTaskConfig): TaskConfigParameter[] {
+  const config: TaskConfigParameter[] = []
+
+  if (options.strictness) {
+    config.push(STRICTNESS_CONFIGS[options.strictness])
+  }
+
+  if (options.focus) {
+    config.push({
+      name: 'focus',
+      value: options.focus,
+      meaning: `Focus the review on ${options.focus} aspects`
+    })
+  }
+
+  return config
+}
+```
+
+2. Use it in your task (`src/tasks/review.ts`):
+
+```typescript
+import { buildReviewConfig, type ReviewTaskConfig } from '../config/task-configurations.js'
+
+export interface ReviewOptions {
+  // ... other options
+  taskConfig?: ReviewTaskConfig
+}
+
+async function buildReviewPrompt(..., taskConfig?: ReviewTaskConfig) {
+  const taskConfiguration = taskConfig ? buildReviewConfig(taskConfig) : undefined
+  return buildPrompt({ ..., taskConfiguration })
+}
+```
+
+3. Add flags to your command (`src/commands/review.ts`):
+
+```typescript
+static flags = {
+  strictness: Flags.string({
+    options: ['low', 'high'],
+    default: 'high',
+    description: 'Review strictness level'
+  }),
+  focus: Flags.string({
+    options: ['security', 'performance', 'style'],
+    description: 'Review focus area'
+  })
+}
+
+// Pass to task
+taskConfig: {
+  strictness: flags.strictness as 'low' | 'high',
+  focus: flags.focus as 'security' | 'performance' | 'style' | undefined
+}
+```
+
+**Reusing Shared Parameters**:
+
+If you want to reuse `effort` in a new task, just import and use `EFFORT_CONFIGS`:
+
+```typescript
+import { EFFORT_CONFIGS } from '../config/task-configurations.js'
+
+export interface NewTaskConfig {
+  effort?: 'low' | 'mid' | 'high'  // Reuse effort
+  someOtherParam?: string
+}
+
+export function buildNewTaskConfig(options: NewTaskConfig): TaskConfigParameter[] {
+  const config: TaskConfigParameter[] = []
+
+  if (options.effort) {
+    config.push(EFFORT_CONFIGS[options.effort])  // Reuse!
+  }
+
+  // Add task-specific params...
+
+  return config
+}
+```
+
 ## Prompt File System
 
 All prompts are stored as Markdown files in `src/prompts/`:
@@ -297,5 +467,7 @@ Commands can operate in two modes:
 - **Silent**: Minimal output for file writing or piping (`showUI: false`)
 - keep the docs up to date.
 - do pnpm build after each change.
+- do not commit unless asked.
 - commit messages should be short but relevant. follow angular convention for commit messages
 - always keep the README.md up-to-date
+- The code should be DRY. reuse duplicated code.

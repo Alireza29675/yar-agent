@@ -1,6 +1,7 @@
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
+import {buildPresentConfig, type PresentTaskConfig} from '../config/task-configurations.js'
 import type {AvailableTool} from '../config/tools.js'
 import {executeAgent} from '../services/agent.js'
 import {buildPrompt, loadPromptFromFile} from '../services/prompt-builder.js'
@@ -20,6 +21,8 @@ export interface PresentOptions {
   message?: string
   /** Whether to show UI */
   showUI?: boolean
+  /** Task configuration options */
+  taskConfig?: PresentTaskConfig
 }
 
 /**
@@ -43,9 +46,14 @@ export interface PresentResult {
  *
  * @param content - Content to convert
  * @param message - Optional user message
+ * @param taskConfig - Optional task configuration options
  * @returns The formatted present prompt
  */
-async function buildPresentPrompt(content: string, message?: string): Promise<string> {
+async function buildPresentPrompt(
+  content: string,
+  message?: string,
+  taskConfig?: PresentTaskConfig,
+): Promise<string> {
   // Load base prompt from markdown file
   const promptFile = join(__dirname, '..', 'prompts', 'tasks', 'present.md')
   const basePrompt = await loadPromptFromFile(promptFile, {})
@@ -54,11 +62,15 @@ async function buildPresentPrompt(content: string, message?: string): Promise<st
   const dateContext = getCurrentDateContext()
   const fullContext = `${dateContext}\n\n${content}`
 
+  // Build task configuration parameters
+  const taskConfiguration = taskConfig ? buildPresentConfig(taskConfig) : undefined
+
   // Add the content and message
   return buildPrompt({
     basePrompt,
     context: fullContext,
     message,
+    taskConfiguration,
   })
 }
 
@@ -68,10 +80,10 @@ async function buildPresentPrompt(content: string, message?: string): Promise<st
  * Converts content to a reveal.js presentation.
  */
 export async function presentTask(options: PresentOptions): Promise<PresentResult> {
-  const {content, message, showUI = true} = options
+  const {content, message, showUI = true, taskConfig} = options
 
   // Build the prompt
-  const prompt = await buildPresentPrompt(content, message)
+  const prompt = await buildPresentPrompt(content, message, taskConfig)
 
   // Create agent configuration with no tools (just generate HTML)
   const config = {

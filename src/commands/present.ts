@@ -11,18 +11,18 @@ import {readStdin} from '../utils/stdin.js'
 export default class Present extends Command {
   static description = 'Convert content to a reveal.js presentation'
   static examples = [
-    '<%= config.bin %> <%= command.id %> -o slides.html -f content.md',
-    '<%= config.bin %> <%= command.id %> -o slides.html -f intro.md -f main.md -f conclusion.md',
-    'cat notes.md | <%= config.bin %> <%= command.id %> -o slides.html',
-    '<%= config.bin %> <%= command.id %> -o slides.html -f content.md -m "Make it technical"',
-    '<%= config.bin %> <%= command.id %> -o slides.html -f content.md --serve',
+    '<%= config.bin %> <%= command.id %> -f content.md',
+    '<%= config.bin %> <%= command.id %> -f intro.md -f main.md -f conclusion.md',
+    '<%= config.bin %> <%= command.id %> -f content.md -o slides.html',
+    '<%= config.bin %> <%= command.id %> -f content.md -m "Make it technical"',
+    '<%= config.bin %> <%= command.id %> -f content.md --no-serve',
   ]
   static flags = {
     file: Flags.string({
       char: 'f',
       description: 'Input file(s) to convert to presentation',
       multiple: true,
-      required: false,
+      required: true,
     }),
     message: Flags.string({
       char: 'm',
@@ -31,12 +31,20 @@ export default class Present extends Command {
     }),
     output: Flags.string({
       char: 'o',
-      description: 'Output HTML file path',
-      required: true,
+      default: 'GUIDE.slides.html',
+      description: 'Output HTML file path (default: GUIDE.slides.html)',
+      required: false,
     }),
     serve: Flags.boolean({
-      default: false,
-      description: 'Serve presentation after generation',
+      allowNo: true,
+      default: true,
+      description: 'Serve presentation after generation (default: true)',
+    }),
+    theme: Flags.string({
+      default: 'light',
+      description: 'Presentation theme: light or dark',
+      options: ['light', 'dark'],
+      required: false,
     }),
     update: Flags.boolean({
       char: 'u',
@@ -47,7 +55,7 @@ export default class Present extends Command {
 
   public async run(): Promise<void> {
     const {flags} = await this.parse(Present)
-    const {file: files, message, output, serve, update} = flags
+    const {file: files, message, output, serve, theme: themeFlag, update} = flags
 
     // Validate output filename
     if (!output.endsWith('.html')) {
@@ -99,7 +107,7 @@ export default class Present extends Command {
 
     // Validate that at least one input source is provided (excluding existing content for update)
     if (fileContents.length === 0 || (update && fileContents.length === 1)) {
-      this.error('No input provided. Use -f to specify files or pipe content via stdin.')
+      this.error('No input provided. Specify files with -f.')
     }
 
     // Combine all content
@@ -124,6 +132,9 @@ export default class Present extends Command {
       content,
       message: message || undefined,
       showUI: false,
+      taskConfig: {
+        theme: themeFlag as 'light' | 'dark',
+      },
     })
 
     // Stop spinner

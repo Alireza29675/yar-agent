@@ -5,6 +5,7 @@ import {resolve} from 'node:path'
 import {theme} from '../lib/theme/index.js'
 import {timelineTask} from '../tasks/timeline.js'
 import {readStdin} from '../utils/stdin.js'
+import {ensureOutputDirectory} from '../utils/file.js'
 
 export default class Timeline extends Command {
   static args = {
@@ -16,13 +17,19 @@ export default class Timeline extends Command {
   }
   static description = 'Analyze the evolution of a directory over time using Git history'
   static examples = [
-    '<%= config.bin %> <%= command.id %> . -o timeline.md',
-    '<%= config.bin %> <%= command.id %> ./src -o timeline.md',
+    '<%= config.bin %> <%= command.id %> .',
+    '<%= config.bin %> <%= command.id %> ./src',
     '<%= config.bin %> <%= command.id %> ./packages/core -o evolution.md',
-    '<%= config.bin %> <%= command.id %> . -m "Focus on architecture changes" -o timeline.md',
-    'cat notes.txt | <%= config.bin %> <%= command.id %> ./src -o timeline.md',
+    '<%= config.bin %> <%= command.id %> . -m "Focus on architecture changes"',
+    'cat notes.txt | <%= config.bin %> <%= command.id %> ./src',
   ]
   static flags = {
+    effort: Flags.string({
+      default: 'mid',
+      description: 'Analysis effort level: low (quick overview), mid (balanced), high (thorough)',
+      options: ['low', 'mid', 'high'],
+      required: false,
+    }),
     message: Flags.string({
       char: 'm',
       description: 'Important message for the agent to pay attention to',
@@ -30,18 +37,22 @@ export default class Timeline extends Command {
     }),
     output: Flags.string({
       char: 'o',
-      description: 'Output file path to write the timeline to',
-      required: true,
+      default: 'TIMELINE.md',
+      description: 'Output file path to write the timeline to (default: TIMELINE.md)',
+      required: false,
     }),
   }
 
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Timeline)
     const {directory} = args
-    const {message, output} = flags
+    const {effort, message, output} = flags
 
     // Resolve full path
     const fullPath = resolve(directory)
+
+    // Ensure output directory exists
+    await ensureOutputDirectory(output)
 
     // Check if output file exists and read it
     let existingContent: string | undefined
@@ -95,6 +106,9 @@ ${stdinInput}`)
       message: message || undefined,
       outputFile: resolve(output),
       showUI,
+      taskConfig: {
+        effort: effort as 'low' | 'mid' | 'high',
+      },
     })
 
     // Verify output file was created
