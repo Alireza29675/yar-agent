@@ -33,6 +33,7 @@
     "eslint-config-oclif": "^6",
     "eslint-config-prettier": "^10",
     "oclif": "^4",
+    "promptfoo": "^0.118.11",
     "shx": "^0.3.3",
     "ts-node": "^10",
     "typescript": "^5"
@@ -79,7 +80,10 @@
     "postpack": "shx rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "release": "pnpm run build && changeset publish --no-git-tag",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "eval": "pnpm run build && promptfoo eval -c evals/configs/study-command.yaml",
+    "eval:view": "promptfoo view",
+    "eval:watch": "promptfoo eval -c evals/configs/study-command.yaml --watch"
   },
   "types": "dist/index.d.ts"
 }

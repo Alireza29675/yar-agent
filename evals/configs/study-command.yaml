@@ -1,0 +1,92 @@
+# Evaluation configuration for YAR study command
+description: Test YAR's ability to analyze codebases and identify issues
+
+# Use our custom YAR provider
+providers:
+  - file://./evals/providers/yar-provider.ts
+
+# Default test configuration
+defaultTest:
+  vars:
+    directory: ./evals/fixtures/sample-project
+
+# Test cases for the study command
+prompts:
+  - file://./evals/datasets/study-prompts.yaml
+
+# How to evaluate the outputs
+tests:
+  - vars:
+      directory: ./evals/fixtures/sample-project
+    assert:
+      - type: javascript
+        value: output.includes('calculator') || output.includes('Calculator')
+      - type: javascript
+        value: output.length > 100
+      - type: llm-rubric
+        value: |
+          The response should identify code structure and provide meaningful analysis.
+          Score 1-5 based on:
+          - Accuracy of code understanding
+          - Identification of potential issues
+          - Quality of explanations
+
+  - description: Should identify security issues in auth module
+    vars:
+      directory: ./evals/fixtures/sample-project
+      message: Analyze the auth module for security issues
+    assert:
+      - type: contains-any
+        value:
+          - password
+          - validation
+          - security
+          - authenticate
+      - type: llm-rubric
+        value: |
+          The response should identify security concerns in the auth module.
+          Look for mentions of:
+          - Missing password validation
+          - Password strength requirements
+          - Authentication security
+          Score 5 if it identifies missing password validation
+
+  - description: Should identify bug in calculator divide method
+    vars:
+      directory: ./evals/fixtures/sample-project
+      message: Find bugs in the calculator class
+    assert:
+      - type: contains-any
+        value:
+          - divide
+          - division
+          - zero
+          - Infinity
+      - type: llm-rubric
+        value: |
+          The response should identify the division by zero bug.
+          Score 5 if it mentions zero division handling
+          Score 3 if it mentions the divide method but not the bug
+          Score 1 otherwise
+
+  - description: Should provide helpful codebase overview
+    vars:
+      directory: ./evals/fixtures/sample-project
+      message: Give me an overview of this codebase
+    assert:
+      - type: javascript
+        value: output.length > 200
+      - type: contains-all
+        value:
+          - calculator
+          - auth
+      - type: llm-rubric
+        value: |
+          The response should provide a clear overview of the codebase.
+          Score based on:
+          - Mentions all major files/modules
+          - Explains purpose of each component
+          - Provides helpful structure summary
+
+# Output configuration
+outputPath: ./evals/results/study-command-results.json

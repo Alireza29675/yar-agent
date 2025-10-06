@@ -1,0 +1,8 @@
+# Test prompts for the study command
+# These are the base prompts that will be evaluated
+
+- "What files are in this codebase?"
+- "Analyze the auth module for security issues"
+- "Find bugs in the calculator class"
+- "Give me an overview of this codebase"
+- "What does the hashPassword function do?"

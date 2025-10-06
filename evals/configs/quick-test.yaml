@@ -1,0 +1,27 @@
+# Quick test configuration - runs fast for development
+description: Quick test of YAR study command
+
+providers:
+  - file://./evals/providers/yar-provider.ts
+
+defaultTest:
+  vars:
+    directory: ./evals/fixtures/sample-project
+
+prompts:
+  - "What files are in this codebase?"
+
+tests:
+  - description: Should list files in the codebase
+    vars:
+      directory: ./evals/fixtures/sample-project
+    assert:
+      - type: contains-any
+        value:
+          - calculator
+          - auth
+          - utils
+      - type: javascript
+        value: output.length > 50
+
+outputPath: ./evals/results/quick-test-results.json

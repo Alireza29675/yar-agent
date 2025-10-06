@@ -13,3 +13,6 @@ package-lock.json
 
 tsconfig.tsbuildinfo
 
+# Eval results
+/evals/results/
+.promptfoo/

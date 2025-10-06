@@ -92,6 +92,14 @@ Update the contributor guide:
 pnpm onboarding:update
 ```
 
+Run evaluations to test the system:
+```bash
+pnpm run eval        # Run all evaluations
+pnpm run eval:view   # View results in web UI
+```
+
+See [evals/README.md](./evals/README.md) for details on the evaluation system.
+
 ## Why this name?
 
 In Farsi (my mother language), YAR (یار) means companion.
