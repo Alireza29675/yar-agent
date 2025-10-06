@@ -1,5 +1,15 @@
 # yar-agent
 
+## 0.4.0
+
+### Minor Changes
+
+- 3576384: Add task-specific configuration system with --effort and --theme flags. Each task now has its own configuration interface: study/timeline support --effort (low/mid/high), present supports --theme (light/dark). Configurations are type-safe and extensible.
+
+### Patch Changes
+
+- 3576384: Simplify CLI flags with sensible defaults. `study` and `timeline` now default to GUIDE.md and TIMELINE.md respectively. `present` defaults to GUIDE.slides.html and serves by default.
+
 ## 0.3.1
 
 ### Patch Changes
