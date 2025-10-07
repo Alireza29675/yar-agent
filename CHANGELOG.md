@@ -1,5 +1,11 @@
 # yar-agent
 
+## 0.4.2
+
+### Patch Changes
+
+- a9c0abb: Add demo GIFs to README showing CLI-to-presentation workflow
+
 ## 0.4.1
 
 ### Patch Changes
