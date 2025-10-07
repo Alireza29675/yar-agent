@@ -1,7 +1,7 @@
 {
   "name": "yar-agent",
   "description": "Understand Complex Codebases Fast - An agentic CLI tool for analyzing and understanding codebases",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "Alireza Sheikholmolouki",
   "bin": {
     "yar": "./bin/run.js"
