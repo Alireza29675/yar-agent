@@ -5,6 +5,15 @@
 
 Yar is an CLI agent, built with [Claude Agent SDK](https://docs.claude.com/en/api/agent-sdk/overview), which analyzes complex and large codebases and generate documentation. It reads code, understands architecture, and creates **onboarding guides and presentations** automatically.
 
+<p align="center">
+  <img src="./docs/assets/yar-cli.gif" width="45%" alt="CLI Command" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="./docs/assets/output.gif" width="45%" alt="Generated Presentation" />
+</p>
+<p align="center">
+  <em>Run CLI command → Get presentation</em>
+</p>
+
 ## ⚙️ Installation
 
 ```bash
