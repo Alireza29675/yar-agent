@@ -5,6 +5,7 @@ import {resolve} from 'node:path'
 import {theme} from '../lib/theme/index.js'
 import {studyTask} from '../tasks/study.js'
 import {ensureOutputDirectory} from '../utils/file.js'
+import {getFormattedDateTime} from '../utils/format.js'
 import {readStdin} from '../utils/stdin.js'
 
 export default class Study extends Command {
@@ -93,7 +94,8 @@ ${stdinInput}`)
 
     // Display info
     console.log()
-    theme().info(`${existingContent ? 'Updating' : 'Analyzing'}: ${fullPath}`)
+    theme().header(`${existingContent ? 'Updating' : 'Studying'}: ${fullPath}`)
+    theme().info(getFormattedDateTime())
     if (message) {
       theme().info(`Focus: ${message}`)
     }

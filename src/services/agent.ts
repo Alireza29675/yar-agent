@@ -274,7 +274,6 @@ function processAssistantMessage(
     // Show UI feedback if enabled
     if (showUI) {
       if (block.type === 'text' && block.text && block.text.trim()) {
-        theme().section('Analysis')
         theme().assistantMessage(block.text)
       } else if (block.type === 'tool_use' && block.name) {
         theme().toolUse(block.name, block.input as Record<string, unknown>)

@@ -6,6 +6,7 @@ import {dirname, resolve} from 'node:path'
 
 import {theme} from '../lib/theme/index.js'
 import {presentTask} from '../tasks/present.js'
+import {getFormattedDateTime} from '../utils/format.js'
 import {readStdin} from '../utils/stdin.js'
 
 export default class Present extends Command {
@@ -115,7 +116,8 @@ export default class Present extends Command {
 
     // Display info
     console.log()
-    theme().info(`${update ? 'Updating' : 'Creating'} presentation: ${fullOutputPath}`)
+    theme().header(`${update ? 'Updating' : 'Creating'} presentation: ${fullOutputPath}`)
+    theme().info(getFormattedDateTime())
     if (message) {
       theme().info(`Instructions: ${message}`)
     }
@@ -166,8 +168,6 @@ export default class Present extends Command {
   }
 
   private async servePresentation(filePath: string): Promise<void> {
-    const port = 3000
-
     const server = http.createServer(async (req, res) => {
       try {
         const content = await fs.readFile(filePath, 'utf8')
@@ -179,7 +179,10 @@ export default class Present extends Command {
       }
     })
 
-    server.listen(port, () => {
+    // Use port 0 to let the OS assign an available port
+    server.listen(0, () => {
+      const address = server.address()
+      const port = typeof address === 'object' && address !== null ? address.port : 3000
       const url = `http://localhost:${port}`
       theme().divider()
       theme().success(`Serving presentation at: ${url}`)

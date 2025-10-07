@@ -3,7 +3,6 @@ import boxen from 'boxen'
 import chalk from 'chalk'
 import Table from 'cli-table3'
 import figures from 'figures'
-import gradient from 'gradient-string'
 import ora, {Ora} from 'ora'
 
 import type {Theme} from './interface.js'
@@ -33,21 +32,18 @@ export class DefaultTheme implements Theme {
    * Display assistant response text with proper formatting
    */
   assistantMessage(text: string): void {
-    // Add subtle indent and formatting
-    const lines = text.split('\n')
-    for (const line of lines) {
-      if (line.trim().startsWith('#')) {
-        // Headers
-        console.log('\n' + this.colors.bold(line))
-      } else if (line.trim().startsWith('-') || line.trim().startsWith('*')) {
-        // List items
-        console.log(this.colors.dim('  ') + line)
-      } else if (line.trim()) {
-        console.log(line)
-      } else {
-        console.log()
-      }
-    }
+    // Create a callout box to show AI is speaking
+    const boxContent = '🤖 ' + text
+
+    console.log(
+      boxen(boxContent, {
+        borderColor: 'cyan',
+        borderStyle: 'round',
+        dimBorder: true,
+        margin: {bottom: 0, left: 0, right: 0, top: 0},
+        padding: {bottom: 0, left: 1, right: 1, top: 0},
+      })
+    )
   }
 
   /**
@@ -126,7 +122,7 @@ export class DefaultTheme implements Theme {
    * Display info message
    */
   info(message: string): void {
-    console.log(`  ${this.colors.info('→')} ${this.colors.dim(message)}`)
+    console.log(`${this.colors.info('→')} ${this.colors.dim(message)}`)
   }
 
 
@@ -176,7 +172,7 @@ export class DefaultTheme implements Theme {
   summaryBox(title: string, items: Record<string, number | string>): void {
     console.log(this.colors.success(`\n✨ ${this.colors.bold(title)}`))
     for (const [key, value] of Object.entries(items)) {
-      console.log(`  ${this.colors.primary('•')} ${this.colors.dim(key + ':')} ${this.colors.highlight(String(value))}`)
+      console.log(`${this.colors.primary('•')} ${this.colors.dim(key + ':')} ${this.colors.highlight(String(value))}`)
     }
 
     console.log()
@@ -205,7 +201,7 @@ export class DefaultTheme implements Theme {
    * Display assistant thinking indicator
    */
   thinking(): void {
-    console.log(this.colors.dim(`${figures.ellipsis} Thinking...`))
+    console.log(this.colors.dim(`${figures.ellipsis} Thinking ${figures.ellipsis}`))
   }
 
   /**
@@ -213,7 +209,7 @@ export class DefaultTheme implements Theme {
    */
   toolResult(toolName: string, success: boolean, summary?: string): void {
     const status = success ? this.colors.success('✓') : this.colors.error('✗')
-    console.log(`  ${status} ${this.colors.dim(summary || 'Complete')}`)
+    console.log(`${status} ${this.colors.dim(summary || 'Complete')}`)
   }
 
   /**
@@ -232,7 +228,7 @@ export class DefaultTheme implements Theme {
 
     const icon = toolIcons[toolName] || '🔧'
     const formattedInput = input ? this.formatToolInput(toolName, input) : ''
-    console.log(`  ${icon} ${this.colors.tool(toolName)}${formattedInput ? this.colors.dim(': ' + formattedInput) : ''}`)
+    console.log(` ${icon} ${this.colors.tool(toolName)}${formattedInput ? this.colors.dim(': ' + formattedInput) : ''}`)
   }
 
   /**

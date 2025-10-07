@@ -4,8 +4,9 @@ import {resolve} from 'node:path'
 
 import {theme} from '../lib/theme/index.js'
 import {timelineTask} from '../tasks/timeline.js'
-import {readStdin} from '../utils/stdin.js'
 import {ensureOutputDirectory} from '../utils/file.js'
+import {getFormattedDateTime} from '../utils/format.js'
+import {readStdin} from '../utils/stdin.js'
 
 export default class Timeline extends Command {
   static args = {
@@ -90,7 +91,8 @@ ${stdinInput}`)
 
     // Display info
     console.log()
-    theme().info(`${existingContent ? 'Updating timeline' : 'Tracing history'}: ${fullPath}`)
+    theme().header(`${existingContent ? 'Updating timeline' : 'Tracing'}: ${fullPath}`)
+    theme().info(getFormattedDateTime())
     if (message) {
       theme().info(`Focus: ${message}`)
     }
