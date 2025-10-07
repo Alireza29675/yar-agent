@@ -1,5 +1,11 @@
 # yar-agent
 
+## 0.4.1
+
+### Patch Changes
+
+- 7122e28: feat: improve UI with agent callouts, human-readable timestamps, and unified date formatting
+
 ## 0.4.0
 
 ### Minor Changes
